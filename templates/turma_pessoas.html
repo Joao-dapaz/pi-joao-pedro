@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Maestro - Conexões musicais</title>
+
+</head>
+
+<body>
+
+    <div id="container1">
+
+        <div id="divtopo">
+
+            <h1>Turma: {{ nome_turma }}</h1>
+
+            <nav>
+                <a href="/turmas">Voltar para Turmas</a> |
+                <a href="/logout">Sair</a>
+            </nav>
+
+        </div>
+
+        <hr>
+
+        <div id="divturmas">
+
+            <h2>Professor</h2>
+
+            <p><strong>{{ professor }}</strong></p>
+
+            <hr>
+
+            <h2>Alunos</h2>
+
+            {% if alunos %}
+
+            <ul>
+
+                {% for aluno in alunos %}
+
+                <li>{{ aluno }}</li>
+
+                {% endfor %}
+
+            </ul>
+
+            {% else %}
+
+            <p>Nenhum aluno cadastrado nesta turma.</p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

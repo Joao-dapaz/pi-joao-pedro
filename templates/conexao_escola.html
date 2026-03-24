@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maestro - Conexões musicais</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+    <div id="container1">
+
+        <div id="divtopo">
+        <h1>Realize a sua conexão</h1>
+        </div>
+
+    <div class="container-fluid d-flex gap-4">
+
+    <div id="mapa"></div>
+
+    </div>
+        <a href="/login" class="btn btn-success mt-3">Login</a>
+    </div>
+
+    <div id="lista-escolas">
+        <h3>Escolas próximas</h3>
+    </div>
+
+
+<script>
+
+var map = L.map('mapa').setView([-30.0425, -51.2191], 13);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19
+}).addTo(map);
+
+var escolas = {{ escolas | tojson | safe }};
+
+
+var redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+
+var greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+navigator.geolocation.getCurrentPosition(function(pos){
+
+    var userLat = pos.coords.latitude;
+    var userLon = pos.coords.longitude;
+
+    map.setView([userLat,userLon],14);
+
+    
+    L.marker([userLat, userLon], { icon: redIcon })
+    .addTo(map)
+    .bindPopup("Você está aqui")
+    .openPopup();
+
+    escolas.forEach(function(escola){
+
+        var lat = escola[3];
+        var lon = escola[4];
+
+        var distancia = map.distance(
+            [userLat,userLon],
+            [lat, lon]
+        );
+
+        escola.distancia = distancia;
+
+        
+        L.marker([lat,lon], { icon: greenIcon })
+        .addTo(map)
+        .bindPopup("<b>"+escola[1]+"</b><br>"+escola[2]);
+
+    });
+
+    
+    escolas.sort(function(a,b){
+        return a.distancia - b.distancia;
+    });
+
+    var lista = document.getElementById("lista-escolas");
+    lista.innerHTML = "<h3>Escolas próximas</h3>";
+
+    escolas.forEach(function(escola){
+
+        var div = document.createElement("div");
+        div.className = "boxs-escolas";
+
+        div.innerHTML =
+        "<h5>"+escola[1]+"</h5>" +
+        "<p>"+(escola[6] || "")+"</p>" +
+        "<p>"+escola[2]+"</p>" +
+        "<p><b>"+Math.round(escola.distancia)+" metros</b></p>";
+
+        lista.appendChild(div);
+
+    });
+
+}, function(){
+    alert("Não foi possível obter sua localização.");
+});
+
+    </script>
+
+</body>
+</html>

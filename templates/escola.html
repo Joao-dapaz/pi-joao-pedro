@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <title>Maestro - Conexões musicais</title>
+</head>
+
+<body>
+
+<div id="container1">
+
+    
+    <div id="divtopo" >
+
+        <h1>{{ escola[0] }}</h1>
+
+        <nav>
+            <a href="#" onclick="toggleSobre()">Sobre a Escola</a> |
+            <a href="/turmas">Turmas</a> |
+            <a href="/logout">Sair</a>
+        </nav>
+
+    </div>
+
+    
+    <div id="subbox" style="width: max-content;">
+
+        
+        <div>
+            <h2>Bem-vindo 👋</h2>
+            <p>{{ escola[1] }}</p>
+        </div>
+
+        <hr>
+
+        
+        <div id="sobre" style="display: none; padding-left: 10px; ">
+
+            <h2>Sobre a Escola</h2>
+
+            <p><strong>Endereço:</strong> {{ escola[2] }}</p>
+            <p><strong>Telefone:</strong> {{ escola[3] }}</p>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+    function toggleSobre() {
+        var sobre = document.getElementById("sobre");
+    
+        if (sobre.style.display === "none") {
+            sobre.style.display = "block";
+        } else {
+            sobre.style.display = "none";
+        }
+    }
+    </script>
+</body>
+</html>

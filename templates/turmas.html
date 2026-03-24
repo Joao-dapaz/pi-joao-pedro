@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Maestro - Conexões musicais</title>
+
+</head>
+
+<body>
+
+<div id="container1">
+
+    <div id="divtopo">
+
+        <h1>{{ escola[0] }}</h1>
+
+        <nav>
+            <a href="/escola">Início</a> |
+            <a href="/turmas">Turmas</a> |
+            <a href="/logout">Sair</a>
+        </nav>
+
+    </div>
+
+    <hr>
+
+    <h2>Turmas Disponíveis</h2>
+
+    <br>
+
+    {% for id_turma, nome, descricao, professor in turmas %}
+
+    <div id="divturmas">
+
+        <h3><strong>{{ nome }}</strong></h3>
+
+        <hr>
+
+        <p><strong>Professor:</strong> {{ professor }}</p>
+
+        <p>{{ descricao }}</p>
+
+        <a href="/turma/{{ id_turma }}/pessoas">Ver turma</a>
+
+        <button onclick="toggleMateriais({{ id_turma }})">
+            Ver materiais
+        </button>
+
+        <div id="materiais-{{ id_turma }}" style="display: none; margin-top: 10px;">
+
+            <p><i>Nenhum material disponível ainda.</i></p>
+        
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</body>
+    <script>
+        function toggleMateriais(id) {
+            var div = document.getElementById("materiais-" + id);
+        
+            if (div.style.display === "none") {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
+    </script>
+</html>
