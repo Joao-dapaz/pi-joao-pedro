@@ -15,65 +15,66 @@
 
 <body>
 
-<div id="container1">
+    <div id="container1">
 
-    <div id="divtopo">
+        <div id="divtopo">
 
-        <h1>{{ escola[0] }}</h1>
+            <h1>{{ escola[0] }}</h1>
 
-        <nav>
-            <a href="/escola">Início</a> |
-            <a href="/turmas">Turmas</a> |
-            <a href="/logout">Sair</a>
-        </nav>
+            <nav>
+                <a href="/escola">Início</a> |
+                <a href="/turmas">Turmas</a> |
+                <a href="/logout">Sair</a>
+            </nav>
 
-    </div>
-
-    <hr>
-
-    <h2>Turmas Disponíveis</h2>
-
-    <br>
-
-    {% for id_turma, nome, descricao, professor in turmas %}
-
-    <div id="divturmas">
-
-        <h3><strong>{{ nome }}</strong></h3>
+        </div>
 
         <hr>
 
-        <p><strong>Professor:</strong> {{ professor }}</p>
+        <h2>Turmas Disponíveis</h2>
 
-        <p>{{ descricao }}</p>
+        <br>
 
-        <a href="/turma/{{ id_turma }}/pessoas">Ver turma</a>
+        {% for id_turma, nome, descricao, professor in turmas %}
 
-        <button onclick="toggleMateriais({{ id_turma }})">
-            Ver materiais
-        </button>
+        <div id="divturmas">
 
-        <div id="materiais-{{ id_turma }}" style="display: none; margin-top: 10px;">
+            <h3><strong>{{ nome }}</strong></h3>
 
-            <p><i>Nenhum material disponível ainda.</i></p>
-        
+            <hr>
+
+            <p><strong>Professor:</strong> {{ professor }}</p>
+
+            <p>{{ descricao }}</p>
+
+            <a href="/turma/{{ id_turma }}/pessoas">Ver turma</a>
+
+            <button onclick="toggleMateriais({{ id_turma }})">
+                Ver materiais
+            </button>
+
+            <div id="materiais-{{ id_turma }}" style="display: none; margin-top: 10px;">
+
+                <p><i>Nenhum material disponível ainda.</i></p>
+
+            </div>
         </div>
+
+        {% endfor %}
+
     </div>
 
-    {% endfor %}
-
-</div>
-
 </body>
-    <script>
-        function toggleMateriais(id) {
-            var div = document.getElementById("materiais-" + id);
-        
-            if (div.style.display === "none") {
-                div.style.display = "block";
-            } else {
-                div.style.display = "none";
-            }
+<script>
+    function toggleMateriais(id) {
+        var div = document.getElementById("materiais-" + id);
+
+        if (div.style.display === "none") {
+            div.style.display = "block";
+        } else {
+            div.style.display = "none";
         }
-    </script>
+    }
+</script>
+
 </html>

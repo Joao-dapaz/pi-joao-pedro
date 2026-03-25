@@ -67,5 +67,18 @@ CREATE TABLE IF NOT EXISTS Aluno_Turma (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Material (
+    id_material INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    descricao TEXT,
+    arquivo TEXT,
+    data_envio TEXT,
+    id_turma INTEGER NOT NULL,
+    id_professor INTEGER NOT NULL,
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma),
+    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor)
+)
+""")
 conn.commit()
 conn.close()

@@ -34,7 +34,13 @@ def professor():
     if "professor_id" not in session:
         return redirect("/login")
 
-    return render_template("professor.html")
+    id_professor = session["professor_id"]
+    id_escola = session["id_escola"]
+
+    turmas = model.listar_turmas_do_professor(id_professor)
+    escola = model.buscar_escola(id_escola)
+
+    return render_template("professor.html", turmas=turmas, escola=escola)
 
 @app.route("/escola")
 def escola():
@@ -72,11 +78,16 @@ def turma_pessoas(id_turma):
 
     nome_turma = model.buscar_nome_turma(id_turma)
 
+    origem = "aluno"
+    if "professor_id" in session:
+        origem = "professor"
+
     return render_template(
         "turma_pessoas.html",
         nome_turma=nome_turma,
         professor=professor,
-        alunos=alunos
+        alunos=alunos,
+        origem=origem
     )
 
 

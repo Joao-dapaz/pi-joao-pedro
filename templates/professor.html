@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,76 @@
 </head>
 
 <body>
-    <div id="divtopo">
-        <p>teste professor!</p>
-        <a href="/logout">Sair</a>
+    <div id="container1">
+
+        <div id="divtopo">
+
+            <h1>{{ escola[0] }}</h1>
+
+            <nav>
+                <a href="#" onclick="toggleSobre()">Sobre a Escola</a> |
+                <a href="/logout">Sair</a>
+            </nav>
+
+        </div>
+
+        <div id="subbox" style="flex-direction: column;">
+
+            <div>
+                <h2>Painel do Professor 👨‍🏫</h2>
+            </div>
+
+            <div id="sobre" style="display: none; padding-left: 10px;">
+
+                <h3>Sobre a Escola</h3>
+
+                <p><strong>Endereço:</strong> {{ escola[2] }}</p>
+                <p><strong>Telefone:</strong> {{ escola[3] }}</p>
+
+            </div>
+
+            <hr>
+
+            <h3>Suas Turmas</h3>
+
+            {% for id_turma, nome, descricao in turmas %}
+
+            <div id="divturmas">
+
+                <h4><strong>{{ nome }}</strong></h4>
+
+                <p>{{ descricao }}</p>
+
+                <a href="/turma/{{ id_turma }}/pessoas">Ver alunos</a>
+
+                <button onclick="toggleMateriais({{ id_turma }})">
+                    Materiais
+                </button>
+
+                <div id="materiais-{{ id_turma }}" style="display:none; margin-top:10px;">
+                    <p><i>Nenhum material ainda.</i></p>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
     </div>
 </body>
+<script>
+    function toggleSobre() {
+        var sobre = document.getElementById("sobre");
+
+        sobre.style.display = (sobre.style.display === "none") ? "block" : "none";
+    }
+
+    function toggleMateriais(id) {
+        var div = document.getElementById("materiais-" + id);
+
+        div.style.display = (div.style.display === "none") ? "block" : "none";
+    }
+</script>
+
+</html>

@@ -62,6 +62,23 @@ def cadastro_aluno(nome, email, endereco, telefone, senha, id_escola):
         return False
 
 
+def listar_turmas_do_professor(id_professor):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT id_turma, nome, descricao
+    FROM Turma
+    WHERE id_professor = ?
+    """, (id_professor,))
+
+    turmas = cursor.fetchall()
+
+    conn.close()
+
+    return turmas
+
 def buscar_escola(id_escola):
 
     conn = conectar()
