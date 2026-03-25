@@ -40,7 +40,7 @@ def professor():
     turmas = model.listar_turmas_do_professor(id_professor)
     materiais = model.listar_materiais_professor(id_professor)
 
-    # organizar materiais por turma
+    
     materiais_por_turma = {}
 
     for m in materiais:
@@ -77,12 +77,32 @@ def turmas():
     if "aluno_id" not in session:
         return redirect("/")
 
-    id_escola = session["id_escola"]
+    id_aluno = session["aluno_id"]
 
-    turmas = model.listar_turmas_por_escola(id_escola)
+    turmas = model.listar_turmas_do_aluno(id_aluno)
+ 
+    id_escola = session["id_escola"]
     escola = model.buscar_escola(id_escola)
 
-    return render_template("turmas.html", turmas=turmas, escola=escola)
+    materiais = model.listar_materiais()
+
+    materiais_por_turma = {}
+
+    for m in materiais:
+        id_turma = m[3]
+
+        if id_turma not in materiais_por_turma:
+            materiais_por_turma[id_turma] = []
+
+        materiais_por_turma[id_turma].append(m)
+
+    return render_template(
+        "turmas.html",
+        turmas=turmas,
+        escola=escola,
+        materiais_por_turma=materiais_por_turma
+    )
+
 
 @app.route("/turma/<int:id_turma>/pessoas")
 def turma_pessoas(id_turma):

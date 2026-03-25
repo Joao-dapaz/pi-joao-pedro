@@ -95,6 +95,23 @@ def listar_materiais_professor(id_professor):
 
     return materiais
 
+def listar_materiais():
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT titulo, descricao, data_envio, id_turma
+    FROM Material
+    ORDER BY data_envio DESC
+    """)
+
+    materiais = cursor.fetchall()
+
+    conn.close()
+
+    return materiais
+
 def buscar_escola(id_escola):
 
     conn = conectar()
@@ -112,6 +129,23 @@ def buscar_escola(id_escola):
 
     return escola
 
+def listar_turmas_do_aluno(id_aluno):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT Turma.id_turma, Turma.nome, Turma.descricao, Professor.nome
+    FROM Turma
+    JOIN Professor ON Turma.id_professor = Professor.id_professor
+    JOIN Aluno_Turma ON Turma.id_turma = Aluno_Turma.id_turma
+    WHERE Aluno_Turma.id_aluno = ?
+    """, (id_aluno,))
+
+    turmas = cursor.fetchall()
+    conn.close()
+
+    return turmas
 
 def listar_turmas_por_escola(id_escola):
 

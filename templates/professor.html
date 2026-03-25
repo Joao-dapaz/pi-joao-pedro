@@ -45,47 +45,48 @@
             <hr>
 
             <h3>Suas Turmas</h3>
-
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                
             {% for id_turma, nome, descricao in turmas %}
 
-            <div id="divturmas">
+                <div id="divturmas">
 
-                <h4><strong>{{ nome }}</strong></h4>
+                    <h4><strong>{{ nome }}</strong></h4>
 
-                <p>{{ descricao }}</p>
+                    <p>{{ descricao }}</p>
 
-                <a href="/turma/{{ id_turma }}/pessoas">Ver alunos</a>
+                    <a href="/turma/{{ id_turma }}/pessoas">Ver alunos</a>
 
-                <button onclick="toggleMateriais({{ id_turma }})">
-                    Materiais
-                </button>
+                    <button onclick="toggleMateriais({{ id_turma }})">
+                        Materiais
+                    </button>
 
-                <div id="materiais-{{ id_turma }}" style="display:none; margin-top:10px;">
+                    <div class="materiais" id="materiais-{{ id_turma }}" style="display:none; margin-top:10px;">
 
-                    {% if id_turma in materiais_por_turma %}
+                        {% if id_turma in materiais_por_turma %}
 
-                    {% for m in materiais_por_turma[id_turma] %}
-                    <div>
-                        <strong>{{ m[0] }}</strong><br>
-                        <span>{{ m[1] }}</span><br>
-                        <small>{{ m[2] }}</small>
+                        {% for m in materiais_por_turma[id_turma] %}
+                        <div>
+                            <strong>{{ m[0] }}</strong><br>
+                            <span>{{ m[1] }}</span><br>
+                            <small>{{ m[2] }}</small>
+                        </div>
+                        <hr>
+                        {% endfor %}
+
+                        {% else %}
+                        <p><i>Nenhum material ainda.</i></p>
+                        {% endif %}
+
                     </div>
-                    <hr>
-                    {% endfor %}
-
-                    {% else %}
-                    <p><i>Nenhum material ainda.</i></p>
-                    {% endif %}
 
                 </div>
 
+                {% endfor %}
+
             </div>
 
-            {% endfor %}
-
         </div>
-
-    </div>
 </body>
 <script>
     function toggleSobre() {

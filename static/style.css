@@ -41,40 +41,6 @@ a:hover {
     background: var(--fundo-claro);
 }
 
-#container {
-    display: flex;
-    align-items: center;
-    gap: 50px;
-}
-
-#container-index {
-    display: flex;
-    align-items: center;
-    justify-content:center;
-    gap: 50px;
-
-    height: 100vh;
-    margin: auto;
-}
-
-#container-login {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 50px;
-
-    height: 100vh;
-    margin: auto;
-}
-
-#topo-container {
-    max-width: 1100px;
-    margin: 20px auto; 
-    padding: 20px;
-    background-color: var(--verde-secundario);
-    border-radius: 12px;
-}
-
 form {
     background-color: var(--fundo-claro);
     color: var(--texto-escuro);
@@ -112,13 +78,49 @@ button:hover {
     background: var(--verde-hover);
 }
 
+#container {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+#container-index {
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    gap: 50px;
+
+    height: 100vh;
+    margin: auto;
+}
+
+#container-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+
+    height: 100vh;
+    margin: auto;
+}
+
+#topo-container {
+    max-width: 1100px;
+    margin: 20px auto; 
+    padding: 20px;
+    background-color: var(--verde-secundario);
+    border-radius: 12px;
+}
+
+
 #divturmas {
     background-color: var(--verde-medio);
     color: var(--texto-escuro);
     padding: 25px;
+    width: calc(25% - 20px);
+    min-width: 250px;
     border-radius: 12px;
     margin-bottom: 14px;
-    width: 280px;
     box-shadow: 0 0 12px var(--sombra);
 }
 
@@ -130,7 +132,16 @@ button:hover {
     margin-bottom: 14px;
     box-shadow: 0 0 12px var(--sombra);
 }
- 
+
+#nav {
+    background-color: var(--verde-secundario);
+    color: var(--texto-escuro);
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 0 12px var(--sombra);
+} 
+
 #logo > img {
     width: 150px;
     margin-left: 25px;
@@ -150,6 +161,7 @@ button:hover {
     margin-bottom: 14px;
     box-shadow: 0 0 12px var(--sombra);
 }
+
 
 #mapa {
     width: 60%;
@@ -179,16 +191,7 @@ button:hover {
     margin: 15px;
 }
 
-#nav {
-    background-color: var(--verde-secundario);
-    color: var(--texto-escuro);
-    padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    box-shadow: 0 0 12px var(--sombra);
-}
-
-#subbox {
+#subbox{
     background-color: var(--fundo-claro);
     color: var(--texto-escuro);
     width: 1200px;
@@ -196,4 +199,13 @@ button:hover {
     border-radius: 12px;
     display: flex;
     box-shadow: 0 0 12px var(--sombra);
+}
+
+
+
+.materiais {
+    background-color: var(--fundo-claro);
+    padding: 15px;
+    border-radius: 12px;
+    width: 100%;
 }
