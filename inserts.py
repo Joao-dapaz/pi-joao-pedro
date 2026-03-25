@@ -108,6 +108,29 @@ for relacao in relacoes:
     VALUES (?,?)
     """, relacao)
 
+# MATERIAIS
+material = [
+("Aula 1 - Acordes básicos", "Introdução aos acordes maiores.", None, "2026-03-20", 1, 1),
+("Exercício de ritmo", "Treinar batidas simples.", None, "2026-03-21", 1, 1),
+
+("Técnica vocal", "Exercícios de respiração.", None, "2026-03-20", 2, 2),
+
+("Escalas no teclado", "Prática de escalas maiores.", None, "2026-03-22", 3, 3),
+
+("Solo iniciante", "Primeiros solos na guitarra.", None, "2026-03-23", 4, 1),
+("Coordenação motora", "Exercícios básicos de bateria.", None, "2026-03-23", 5, 1),
+
+("Leitura musical", "Introdução à partitura.", None, "2026-03-21", 7, 2),
+
+("Improvisação jazz", "Escalas e improviso.", None, "2026-03-22", 10, 3)
+]
+
+for material in material:
+    cursor.execute("""
+    INSERT INTO Material
+    (titulo, descricao, arquivo, data_envio, id_turma, id_professor)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, material)
 
 conn.commit()
 conn.close()

@@ -79,6 +79,22 @@ def listar_turmas_do_professor(id_professor):
 
     return turmas
 
+def listar_materiais_professor(id_professor):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT titulo, descricao, data_envio, id_turma
+    FROM Material
+    WHERE id_professor = ?
+    ORDER BY data_envio DESC
+    """, (id_professor,))
+
+    materiais = cursor.fetchall()
+    conn.close()
+
+    return materiais
+
 def buscar_escola(id_escola):
 
     conn = conectar()

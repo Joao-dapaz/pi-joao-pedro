@@ -31,39 +31,40 @@
 
         <hr>
 
-        <h2>Turmas Disponíveis</h2>
+        
+            <h2>Turmas Disponíveis</h2>
 
-        <br>
+            <br>
+        <div style="flex-direction: row;">
+            
+            {% for id_turma, nome, descricao, professor in turmas %}
 
-        {% for id_turma, nome, descricao, professor in turmas %}
+            <div id="divturmas">
 
-        <div id="divturmas">
+                <h3><strong>{{ nome }}</strong></h3>
 
-            <h3><strong>{{ nome }}</strong></h3>
+                <hr>
 
-            <hr>
+                <p><strong>Professor:</strong> {{ professor }}</p>
 
-            <p><strong>Professor:</strong> {{ professor }}</p>
+                <p>{{ descricao }}</p>
 
-            <p>{{ descricao }}</p>
+                <a href="/turma/{{ id_turma }}/pessoas">Ver turma</a>
 
-            <a href="/turma/{{ id_turma }}/pessoas">Ver turma</a>
+                <button onclick="toggleMateriais({{ id_turma }})">
+                    Ver materiais
+                </button>
 
-            <button onclick="toggleMateriais({{ id_turma }})">
-                Ver materiais
-            </button>
+                <div id="materiais-{{ id_turma }}" style="display: none; margin-top: 10px;">
 
-            <div id="materiais-{{ id_turma }}" style="display: none; margin-top: 10px;">
+                    <p><i>Nenhum material disponível ainda.</i></p>
 
-                <p><i>Nenhum material disponível ainda.</i></p>
-
+                </div>
             </div>
+
+            {% endfor %}
+
         </div>
-
-        {% endfor %}
-
-    </div>
-
 </body>
 <script>
     function toggleMateriais(id) {
