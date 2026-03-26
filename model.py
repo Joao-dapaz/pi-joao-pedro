@@ -84,7 +84,7 @@ def listar_materiais_professor(id_professor):
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT titulo, descricao, data_envio, id_turma
+    SELECT titulo, descricao, data_envio, id_turma, arquivo
     FROM Material
     WHERE id_professor = ?
     ORDER BY data_envio DESC
@@ -114,13 +114,12 @@ def listar_materiais():
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT titulo, descricao, data_envio, id_turma
+    SELECT titulo, descricao, data_envio, id_turma, arquivo
     FROM Material
     ORDER BY data_envio DESC
     """)
 
     materiais = cursor.fetchall()
-
     conn.close()
 
     return materiais

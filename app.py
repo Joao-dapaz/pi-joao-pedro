@@ -1,7 +1,15 @@
 from flask import Flask, render_template, request, redirect, flash, session
 import model
+import os
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+    
 app.secret_key = "WOAAHH"
 
 
@@ -38,15 +46,23 @@ def professor():
         titulo = request.form["titulo"]
         descricao = request.form["descricao"]
         id_turma = int(request.form["id_turma"])
-        id_professor = session["professor_id"]
+        arquivo = request.files["arquivo"]
+
+        if arquivo and arquivo.filename != "":
+            caminho = os.path.join(app.config["UPLOAD_FOLDER"], arquivo.filename)
+            arquivo.save(caminho)
+        else:
+            caminho = None
 
         from datetime import datetime
         data_envio = datetime.now().strftime("%Y-%m-%d")
 
+        id_professor = session["professor_id"]
+
         model.publicar_material(
             titulo,
             descricao,
-            None,
+            caminho,  
             data_envio,
             id_turma,
             id_professor

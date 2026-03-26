@@ -63,6 +63,27 @@
 
                     <div class="materiais" id="materiais-{{ id_turma }}" style="display:none; margin-top:10px;">
 
+                        <button onclick="toggleForm({{ id_turma }})">
+                            ➕ Novo material
+                        </button>
+
+                        <div id="form-{{ id_turma }}" style="display:none; margin-top:10px;">
+                            
+                            <form action="/professor" method="POST" enctype="multipart/form-data">
+                                
+                                <input type="hidden" name="id_turma" value="{{ id_turma }}">
+                        
+                                <input type="text" name="titulo" placeholder="Título" required >
+                        
+                                <textarea name="descricao" placeholder="Escreva o material..." required ></textarea>
+                        
+                                <input type="file" name="arquivo" accept=".pdf">
+                        
+                                <button type="submit" >Publicar</button>
+                        
+                            </form>
+                        </div>
+                        <hr>
                         {% if id_turma in materiais_por_turma %}
 
                         {% for m in materiais_por_turma[id_turma] %}
@@ -70,14 +91,20 @@
                             <strong>{{ m[0] }}</strong><br>
                             <span>{{ m[1] }}</span><br>
                             <small>{{ m[2] }}</small>
+
+                            {% if m|length > 4 and m[4] %}
+                                <br>
+                                <a id="pdf" href="/{{ m[4] }}" target="_blank" style="">
+                                    📄 Ver PDF
+                                </a>
+                            {% endif %}
                         </div>
-                        <hr>
-                        {% endfor %}
+                            <hr>
+                            {% endfor %}
 
-                        {% else %}
-                        <p><i>Nenhum material ainda.</i></p>
-                        {% endif %}
-
+                            {% else %}
+                                <p><i>Nenhum material ainda.</i></p>
+                            {% endif %}
                     </div>
 
                 </div>
@@ -100,6 +127,12 @@
 
         div.style.display = (div.style.display === "none") ? "block" : "none";
     }
+
+    function toggleForm(id) {
+    var div = document.getElementById("form-" + id);
+
+    div.style.display = (div.style.display === "none") ? "block" : "none";
+}
 </script>
 
 </html>
