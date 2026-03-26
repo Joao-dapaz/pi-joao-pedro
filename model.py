@@ -95,6 +95,19 @@ def listar_materiais_professor(id_professor):
 
     return materiais
 
+def publicar_material(titulo, descricao, arquivo, data_envio, id_turma, id_professor):
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO Material (titulo, descricao, arquivo, data_envio, id_turma, id_professor)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (titulo, descricao, arquivo, data_envio, id_turma, id_professor))
+
+    conn.commit()
+    conn.close()
+
 def listar_materiais():
 
     conn = conectar()

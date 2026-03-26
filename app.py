@@ -28,10 +28,31 @@ def conexao_escola():
         escolas=escolas
     )
 
-@app.route("/professor")
+@app.route("/professor", methods=["GET", "POST"])
 def professor():
     if "professor_id" not in session:
         return redirect("/login")
+
+    if request.method == "POST":
+
+        titulo = request.form["titulo"]
+        descricao = request.form["descricao"]
+        id_turma = int(request.form["id_turma"])
+        id_professor = session["professor_id"]
+
+        from datetime import datetime
+        data_envio = datetime.now().strftime("%Y-%m-%d")
+
+        model.publicar_material(
+            titulo,
+            descricao,
+            None,
+            data_envio,
+            id_turma,
+            id_professor
+        )
+
+        return redirect("/professor")  
 
     id_professor = session["professor_id"]
     id_escola = session["id_escola"]
@@ -40,7 +61,6 @@ def professor():
     turmas = model.listar_turmas_do_professor(id_professor)
     materiais = model.listar_materiais_professor(id_professor)
 
-    
     materiais_por_turma = {}
 
     for m in materiais:
