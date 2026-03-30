@@ -64,12 +64,15 @@
                         <strong>{{ m[0] }}</strong><br>
                         <span>{{ m[1] }}</span><br>
                         <small>{{ m[2] }}</small>
-                    
+
                         {% if m|length > 4 and m[4] %}
-                            <br>
-                            <a id="pdf"  href="{{ m[4] }}" target="_blank">
-                                📄 Ver PDF
-                            </a>
+                        <br>
+                        <a id="pdf" href="{{ m[4] }}" target="_blank">
+                            📄 Ver
+                        </a>
+                        <a id="pdf" href="{{ m[4] }}" download>
+                            ⬇️ Baixar
+                        </a>
                         {% endif %}
                     </div>
                     <hr>

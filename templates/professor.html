@@ -77,7 +77,7 @@
                         
                                 <textarea name="descricao" placeholder="Escreva o material..." required ></textarea>
                         
-                                <input type="file" name="arquivo" accept=".pdf">
+                                <input type="file" name="arquivo">
                         
                                 <button type="submit" >Publicar</button>
                         
@@ -95,7 +95,7 @@
                             {% if m|length > 4 and m[4] %}
                                 <br>
                                 <a id="pdf" href="/{{ m[4] }}" target="_blank" style="">
-                                    📄 Ver PDF
+                                    📄 Ver
                                 </a>
                             {% endif %}
                         </div>
