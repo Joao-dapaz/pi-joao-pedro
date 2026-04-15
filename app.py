@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, session
 import model
 import os
+import service
 
 app = Flask(__name__)
 
@@ -114,23 +115,9 @@ def turmas():
         return redirect("/")
 
     id_aluno = session["aluno_id"]
-
-    turmas = model.listar_turmas_do_aluno(id_aluno)
- 
     id_escola = session["id_escola"]
-    escola = model.buscar_escola(id_escola)
-
-    materiais = model.listar_materiais()
-
-    materiais_por_turma = {}
-
-    for m in materiais:
-        id_turma = m[3]
-
-        if id_turma not in materiais_por_turma:
-            materiais_por_turma[id_turma] = []
-
-        materiais_por_turma[id_turma].append(m)
+   
+    turmas, escola, materiais_por_turma = service.buscar_dados_turmas_aluno(id_aluno, id_escola)
 
     return render_template(
         "turmas.html",
@@ -143,25 +130,19 @@ def turmas():
 @app.route("/turma/<int:id_turma>/pessoas")
 def turma_pessoas(id_turma):
 
-    professor, alunos = model.listar_pessoas_da_turma(id_turma)
+    dados = service.buscar_pessoas_da_turma(id_turma, session)
 
-    if professor is None:
-        return "Turma não encontrada", 404
-
-    nome_turma = model.buscar_nome_turma(id_turma)
-
-    origem = "aluno"
-    if "professor_id" in session:
-        origem = "professor"
+    if dados is None:
+        return None
 
     return render_template(
         "turma_pessoas.html",
-        nome_turma=nome_turma,
-        professor=professor,
-        alunos=alunos,
-        origem=origem
+        nome_turma=dados["nome_turma"],
+        professor=dados["professor"],
+        alunos=dados["alunos"],
+        origem=dados["origem"]
     )
-
+    
 
 @app.route("/fazer_login_aluno", methods=["POST"])
 def fazer_login_aluno():
