@@ -31,7 +31,7 @@ def buscar_pessoas_da_turma(id_turma,session):
     if "professor_id" in session:
         origem = "professor"
         
-        return {
+    return {
         "nome_turma":nome_turma,
         "professor":professor,
         "alunos":alunos,
