@@ -16,7 +16,7 @@ def buscar_dados_turmas_aluno(id_aluno,id_escola):
 
         materiais_por_turma[id_turma].append(m)
 
-        return turmas, escola, materiais_por_turma
+    return turmas, escola, materiais_por_turma
     
 def buscar_pessoas_da_turma(id_turma,session):
 
