@@ -37,8 +37,8 @@ class Tests:
     @patch("service.model.listar_pessoas_da_turma")
     def test_origem_aluno(Self, mock_listar, mock_nome):
 
-        mock_listar.return_value = ("Professor João", ["Aluno 1"])
-        mock_nome.return_value = "Turma B"
+        mock_listar.return_value = ("Professor John", ["Aluno sigma"])
+        mock_nome.return_value = "Turma aura+ego"
 
         session = {"aluno_id": 1}
 
@@ -47,11 +47,15 @@ class Tests:
         assert resultado["origem"] == "aluno"
 
 @patch("service.model.listar_materiais")
-def test_sem_materiais(mock_materiais):
+@patch("service.model.buscar_escola")
+@patch("service.model.listar_turmas_do_aluno")
+def test_sem_materiais(mock_turmas, mock_escola, mock_materiais):
 
+    mock_turmas.return_value = []
+    mock_escola.return_value = ("Escola senac", "", "", "")
     mock_materiais.return_value = []
 
-    materiais = service.buscar_dados_turmas_aluno(1, 1)
+    turmas, escola, materiais = service.buscar_dados_turmas_aluno(1, 1)
 
     assert materiais == {}
 
@@ -59,8 +63,8 @@ def test_sem_materiais(mock_materiais):
 @patch("service.model.listar_pessoas_da_turma")
 def test_formato_correto_retorno(mock_listar, mock_nome):
 
-    mock_listar.return_value = ("Prof", ["A1"])
-    mock_nome.return_value = "Turma Teste"
+    mock_listar.return_value = ("Professor snape", ["A1"])
+    mock_nome.return_value = "Turma dos bobao"
 
     resultado = service.buscar_pessoas_da_turma(1, {})
 
