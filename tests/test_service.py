@@ -70,3 +70,57 @@ def test_formato_correto_retorno(mock_listar, mock_nome):
 
     assert isinstance(resultado, dict)
     assert set(resultado.keys()) == {"nome_turma", "professor", "alunos", "origem"}
+
+@patch("service.model.aluno_login")
+def test_fazer_login_aluno_sucesso(mock_aluno_login):
+    mock_aluno_login.return_value = (1, "João", "email@test.com", "123", "rua", "senha", 5)
+    
+    resultado = service.fazer_login_aluno("email@test.com", "senha")
+    
+    assert resultado["sucesso"] is True
+    assert resultado["aluno_id"] == 1
+    assert resultado["id_escola"] == 5
+
+
+@patch("service.model.aluno_login")
+def test_fazer_login_aluno_invalido(mock_aluno_login):
+    mock_aluno_login.return_value = None
+    
+    resultado = service.fazer_login_aluno("email@test.com", "senha_errada")
+    
+    assert resultado["sucesso"] is False
+    assert resultado["mensagem"] == "Email ou senha inválidos."
+
+
+@patch("service.model.aluno_login")
+def test_fazer_login_aluno_sem_escola(mock_aluno_login):
+    mock_aluno_login.return_value = (1, "João", "email@test.com", "123", "rua", "senha", None)
+    
+    resultado = service.fazer_login_aluno("email@test.com", "senha")
+    
+    assert resultado["sucesso"] is False
+    assert resultado["mensagem"] == "Você precisa se conectar a uma escola antes de entrar."
+
+
+@patch("service.model.professor_login")
+def test_fazer_login_professor_sucesso(mock_professor_login):
+    """Teste de login de professor bem-sucedido"""
+    # professor[0] = id, professor[7] = id_escola
+    mock_professor_login.return_value = (1, "Dani", "dani@test.com", "123", "rua", "senha", "foto", 5)
+    
+    resultado = service.fazer_login_professor("dani@test.com", "senha")
+    
+    assert resultado["sucesso"] is True
+    assert resultado["professor_id"] == 1
+    assert resultado["id_escola"] == 5
+
+
+@patch("service.model.professor_login")
+def test_fazer_login_professor_invalido(mock_professor_login):
+    """Teste com email ou senha inválidos"""
+    mock_professor_login.return_value = None
+    
+    resultado = service.fazer_login_professor("dani@test.com", "senha_errada")
+    
+    assert resultado["sucesso"] is False
+    assert resultado["mensagem"] == "Email ou senha inválidos."

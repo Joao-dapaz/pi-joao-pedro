@@ -146,41 +146,33 @@ def turma_pessoas(id_turma):
 
 @app.route("/fazer_login_aluno", methods=["POST"])
 def fazer_login_aluno():
-
     email = request.form["email"]
     senha = request.form["senha"]
-
-    aluno = model.aluno_login(email, senha)
-
-    if aluno:
-        if aluno[6] is None:
-            flash("Você precisa se conectar a uma escola antes de entrar.")
-            return redirect("/login")
-
-        session["aluno_id"] = aluno[0]
-        session["id_escola"] = aluno[6]
-
+    
+    resultado = service.fazer_login_aluno(email, senha)
+    
+    if resultado["sucesso"]:
+        session["aluno_id"] = resultado["aluno_id"]
+        session["id_escola"] = resultado["id_escola"]
         return redirect("/escola")
-
-    flash("Email ou senha inválidos.")
+    
+    flash(resultado["mensagem"])
     return redirect("/login")
 
 
 @app.route("/fazer_login_professor", methods=["POST"])
 def fazer_login_professor():
-
     email = request.form["email"]
     senha = request.form["senha"]
-
-    professor = model.professor_login(email, senha)
-
-    if professor:
-        session["professor_id"] = professor[0]
-        session["id_escola"] = professor[7]
-
+    
+    resultado = service.fazer_login_professor(email, senha)
+    
+    if resultado["sucesso"]:
+        session["professor_id"] = resultado["professor_id"]
+        session["id_escola"] = resultado["id_escola"]
         return redirect("/professor")
-
-    flash("Email ou senha inválidos.")
+    
+    flash(resultado["mensagem"])
     return redirect("/login")
 
 

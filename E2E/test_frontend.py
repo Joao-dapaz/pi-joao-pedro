@@ -89,18 +89,22 @@ def test_cadastro_bem_sucedido(page: Page):
 
 
 def test_email_duplicado(page: Page):
+    """Testa se o cadastro rejeita um email já existente."""
     page.goto("http://localhost:5000/cadastrar")
     
-   
+    # Tenta cadastrar com email que já existe (rafael@email.com existe nos dados iniciais)
     page.fill('input[name="nome"]', "Outro Aluno")
-    page.fill('input[name="email"]', "rafael@email.com")  
+    page.fill('input[name="email"]', "rafael@email.com")
     page.fill('input[name="telefone"]', "11987654321")
     page.fill('input[name="endereco"]', "Avenida Principal, 456")
     page.fill('input[name="senha"]', "senha456")
-
+    
     page.click('button[type="submit"]')
     
+    # Verifica se mostra a mensagem de erro
     expect(page.locator(".toast-body")).to_contain_text("Email já cadastrado.")
+    
+    # Verifica se mantém na página de cadastro
     expect(page).to_have_url("http://localhost:5000/cadastrar")
 
 
