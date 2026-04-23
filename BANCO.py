@@ -80,5 +80,97 @@ CREATE TABLE IF NOT EXISTS Material (
     FOREIGN KEY (id_professor) REFERENCES Professor(id_professor)
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Admin_Escola (
+    id_admin INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    senha TEXT NOT NULL,
+    endereco TEXT,
+    telefone TEXT,
+    foto TEXT,
+    id_escola INTEGER NOT NULL UNIQUE,
+    data_criacao TEXT,
+    ativo BOOLEAN DEFAULT 1,
+    FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Aviso_Escola (
+    id_aviso INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT,
+    conteudo TEXT NOT NULL,
+    prioridade TEXT CHECK(prioridade IN ('normal', 'urgente')),
+    arquivo TEXT,
+    id_escola INTEGER NOT NULL,
+    id_admin INTEGER NOT NULL,
+    data_criacao TEXT,
+    data_atualizacao TEXT,
+    ativo BOOLEAN DEFAULT 1,
+    FOREIGN KEY (id_escola) REFERENCES Escola(id_escola),
+    FOREIGN KEY (id_admin) REFERENCES Admin_Escola(id_admin)
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Solicitacao_Aluno (
+    id_solicitacao INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_aluno INTEGER NOT NULL,
+    id_escola INTEGER,
+    status TEXT CHECK(status IN ('pendente', 'aprovado', 'rejeitado')),
+    mensagem_recusa TEXT,
+    data_solicitacao TEXT,
+    data_revisao TEXT,
+    id_admin_revisor INTEGER,
+    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (id_escola) REFERENCES Escola(id_escola),
+    FOREIGN KEY (id_admin_revisor) REFERENCES Admin_Escola(id_admin)
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Solicitacao_Professor (
+    id_solicitacao INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_professor INTEGER NOT NULL,
+    id_escola INTEGER,
+    status TEXT CHECK(status IN ('pendente', 'aprovado', 'rejeitado')),
+    mensagem_recusa TEXT,
+    data_solicitacao TEXT,
+    data_revisao TEXT,
+    id_admin_revisor INTEGER,
+    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor),
+    FOREIGN KEY (id_escola) REFERENCES Escola(id_escola),
+    FOREIGN KEY (id_admin_revisor) REFERENCES Admin_Escola(id_admin)
+)
+""")
+# ===== ALTERAÇÕES EM TABELAS EXISTENTES =====
+
+# Adicionar campos a Aluno
+cursor.execute("""
+ALTER TABLE Aluno ADD COLUMN status_escola TEXT DEFAULT 'pendente'
+""")
+
+cursor.execute("""
+ALTER TABLE Aluno ADD COLUMN data_aprovacao TEXT
+""")
+
+# Adicionar campos a Professor
+cursor.execute("""
+ALTER TABLE Professor ADD COLUMN status_escola TEXT DEFAULT 'pendente'
+""")
+
+cursor.execute("""
+ALTER TABLE Professor ADD COLUMN data_aprovacao TEXT
+""")
+
+# Adicionar campos a Turma
+cursor.execute("""
+ALTER TABLE Turma ADD COLUMN criada_por TEXT DEFAULT 'professor'
+""")
+
+cursor.execute("""
+ALTER TABLE Turma ADD COLUMN data_criacao TEXT
+""")
 conn.commit()
 conn.close()
