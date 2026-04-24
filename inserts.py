@@ -22,6 +22,24 @@ for escola in escolas:
     VALUES (?,?,?,?,?,?,?,?)
     """, escola)
 
+# ADMINS (Um por escola)
+admins = [
+("João Admin 1","admin1@escola.com","senha123","Av. Érico Veríssimo, 595","5199990004",1),
+("João Admin 2","admin2@escola.com","senha123","Av. Protásio Alves, 1650","5199990005",2),
+("João Admin 3","admin3@escola.com","senha123","Av. Cristóvão Colombo, 545","5199990006",3),
+("João Admin EST","est.admin@musica.com","senha123","Rua Amadeo Rossi, 467","5199990001",4),
+("João Admin Moinhos","moinhos.admin@musica.com","senha123","Rua Padre Chagas, 145","5199990002",5),
+("João Admin StudioSom","studiosom.admin@musica.com","senha123","Av. João Pessoa, 1050","5199990003",6),
+("João Admin Opus","opus.admin@musica.com","senha123","Av. Protásio Alves, 3490","5199990004",7),
+("João Admin Cordas","cordas.admin@musica.com","senha123","Rua 24 de Outubro, 850","5199990005",8)
+]
+
+for admin in admins:
+    cursor.execute("""
+    INSERT OR IGNORE INTO Admin_Escola
+    (nome,email,senha,endereco,telefone,id_escola,data_criacao)
+    VALUES (?,?,?,?,?,?,datetime('now'))
+    """, admin)
 
 # PROFESSORES
 professores = [
@@ -37,6 +55,22 @@ for professor in professores:
     VALUES (?,?,?,?,?,?,?)
     """, professor)
 
+# ATUALIZAR STATUS DE PROFESSORES E CRIAR SOLICITAÇÕES
+cursor.execute("UPDATE Professor SET status_escola = 'aprovado', data_aprovacao = datetime('now') WHERE id_professor IS NOT NULL")
+
+# SOLICITAÇÃO PROFESSOR (Todos já aprovados para manter compatibilidade com testes)
+solicitacoes_professores = [
+(1, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
+(2, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
+(3, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3)
+]
+
+for sol in solicitacoes_professores:
+    cursor.execute("""
+    INSERT OR IGNORE INTO Solicitacao_Professor
+    (id_professor,id_escola,status,mensagem_recusa,data_solicitacao,data_revisao,id_admin_revisor)
+    VALUES (?,?,?,?,?,?,?)
+    """, sol)
 
 # TURMAS
 turmas = [
@@ -86,6 +120,29 @@ for aluno in alunos:
     VALUES (?,?,?,?,?,?)
     """, aluno)
 
+# ATUALIZAR STATUS DE ALUNOS E CRIAR SOLICITAÇÕES
+cursor.execute("UPDATE Aluno SET status_escola = 'aprovado', data_aprovacao = datetime('now') WHERE id_aluno IS NOT NULL")
+
+# SOLICITAÇÃO ALUNO (Todos já aprovados para manter compatibilidade com testes)
+solicitacoes_alunos = [
+(1, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
+(2, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
+(3, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
+(4, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
+(5, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3),
+(6, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3),
+(7, 1, 'aprovado', None, '2026-03-13', '2026-03-13', 1),
+(8, 2, 'aprovado', None, '2026-03-13', '2026-03-13', 2),
+(9, 3, 'aprovado', None, '2026-03-14', '2026-03-14', 3),
+(10, 1, 'aprovado', None, '2026-03-14', '2026-03-14', 1)
+]
+
+for sol in solicitacoes_alunos:
+    cursor.execute("""
+    INSERT OR IGNORE INTO Solicitacao_Aluno
+    (id_aluno,id_escola,status,mensagem_recusa,data_solicitacao,data_revisao,id_admin_revisor)
+    VALUES (?,?,?,?,?,?,?)
+    """, sol)
 
 # RELAÇÃO ALUNO-TURMA
 relacoes = [
@@ -127,10 +184,24 @@ material = [
 
 for material in material:
     cursor.execute("""
-    INSERT INTO Material
+    INSERT OR IGNORE INTO Material
     (titulo, descricao, arquivo, data_envio, id_turma, id_professor)
     VALUES (?, ?, ?, ?, ?, ?)
     """, material)
+    
+# AVISOS DE EXEMPLO
+avisos = [
+("Bem-vindo!", "Bem-vindo à plataforma Maestro. Nossas aulas começam em breve!", "normal", None, 1, 1),
+("Importante", "Lembrete: comparecer 10 minutos antes da aula", "urgente", None, 1, 1),
+("Aviamento de Boletos", "Os boletos estão disponíveis no sistema", "normal", None, 2, 2),
+]
+
+for aviso in avisos:
+    cursor.execute("""
+    INSERT OR IGNORE INTO Aviso_Escola
+    (titulo,conteudo,prioridade,arquivo,id_escola,id_admin,data_criacao)
+    VALUES (?,?,?,?,?,?,datetime('now'))
+    """, aviso)
 
 conn.commit()
 conn.close()

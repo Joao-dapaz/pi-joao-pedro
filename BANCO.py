@@ -1,8 +1,10 @@
 import sqlite3
+from model import conectar
 
-conn = sqlite3.connect("escola.db")
+conn = conectar()
 cursor = conn.cursor()
 
+# ===== ESCOLA =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Escola (
     id_escola INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Escola (
 )
 """)
 
+# ===== PROFESSOR =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Professor (
     id_professor INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,10 +30,13 @@ CREATE TABLE IF NOT EXISTS Professor (
     telefone TEXT,
     proficiencia TEXT,
     id_escola INTEGER NOT NULL,
+    status_escola TEXT DEFAULT 'pendente',
+    data_aprovacao TEXT,
     FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
 )
 """)
 
+# ===== TURMA =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Turma (
     id_turma INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,11 +45,14 @@ CREATE TABLE IF NOT EXISTS Turma (
     especialidade TEXT,
     id_professor INTEGER NOT NULL,
     id_escola INTEGER NOT NULL,
+    criada_por TEXT DEFAULT 'professor',
+    data_criacao TEXT,
     FOREIGN KEY (id_professor) REFERENCES Professor(id_professor),
     FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
 )
 """)
 
+# ===== ALUNO =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Aluno (
     id_aluno INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,10 +62,13 @@ CREATE TABLE IF NOT EXISTS Aluno (
     telefone TEXT,
     senha TEXT NOT NULL,
     id_escola INTEGER,
+    status_escola TEXT DEFAULT 'pendente',
+    data_aprovacao TEXT,
     FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
 )
 """)
 
+# ===== RELAÇÃO ALUNO-TURMA =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Aluno_Turma (
     id_aluno INTEGER NOT NULL,
@@ -67,6 +79,7 @@ CREATE TABLE IF NOT EXISTS Aluno_Turma (
 )
 """)
 
+# ===== MATERIAL =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Material (
     id_material INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,6 +93,8 @@ CREATE TABLE IF NOT EXISTS Material (
     FOREIGN KEY (id_professor) REFERENCES Professor(id_professor)
 )
 """)
+
+# ===== ADMIN =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Admin_Escola (
     id_admin INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -96,6 +111,7 @@ CREATE TABLE IF NOT EXISTS Admin_Escola (
 )
 """)
 
+# ===== AVISO =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Aviso_Escola (
     id_aviso INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -113,6 +129,7 @@ CREATE TABLE IF NOT EXISTS Aviso_Escola (
 )
 """)
 
+# ===== SOLICITAÇÃO ALUNO =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Solicitacao_Aluno (
     id_solicitacao INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,6 +146,7 @@ CREATE TABLE IF NOT EXISTS Solicitacao_Aluno (
 )
 """)
 
+# ===== SOLICITAÇÃO PROFESSOR =====
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Solicitacao_Professor (
     id_solicitacao INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -144,33 +162,6 @@ CREATE TABLE IF NOT EXISTS Solicitacao_Professor (
     FOREIGN KEY (id_admin_revisor) REFERENCES Admin_Escola(id_admin)
 )
 """)
-# ===== ALTERAÇÕES EM TABELAS EXISTENTES =====
 
-# Adicionar campos a Aluno
-cursor.execute("""
-ALTER TABLE Aluno ADD COLUMN status_escola TEXT DEFAULT 'pendente'
-""")
-
-cursor.execute("""
-ALTER TABLE Aluno ADD COLUMN data_aprovacao TEXT
-""")
-
-# Adicionar campos a Professor
-cursor.execute("""
-ALTER TABLE Professor ADD COLUMN status_escola TEXT DEFAULT 'pendente'
-""")
-
-cursor.execute("""
-ALTER TABLE Professor ADD COLUMN data_aprovacao TEXT
-""")
-
-# Adicionar campos a Turma
-cursor.execute("""
-ALTER TABLE Turma ADD COLUMN criada_por TEXT DEFAULT 'professor'
-""")
-
-cursor.execute("""
-ALTER TABLE Turma ADD COLUMN data_criacao TEXT
-""")
 conn.commit()
 conn.close()

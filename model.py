@@ -664,3 +664,87 @@ def buscar_professor(id_professor):
     conn.close()
 
     return professor
+
+# ===== FUNÇÕES TURMA (Admin) =====
+
+def inserir_turma(nome, descricao, especialidade, id_professor, id_escola, criada_por='professor'):
+    """Insere nova turma (admin ou professor)"""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+        INSERT INTO Turma (nome, descricao, especialidade, id_professor, id_escola, criada_por, data_criacao)
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """, (nome, descricao, especialidade, id_professor, id_escola, criada_por))
+
+        conn.commit()
+        id_turma = cursor.lastrowid
+        conn.close()
+
+        return id_turma
+
+    except sqlite3.IntegrityError:
+        conn.close()
+        return False
+
+
+def atualizar_turma(id_turma, nome, descricao, especialidade, id_professor):
+    """Atualiza turma existente"""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    UPDATE Turma
+    SET nome = ?, descricao = ?, especialidade = ?, id_professor = ?
+    WHERE id_turma = ?
+    """, (nome, descricao, especialidade, id_professor, id_turma))
+
+    conn.commit()
+    conn.close()
+
+
+def deletar_turma(id_turma):
+    """Deleta turma"""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    DELETE FROM Turma WHERE id_turma = ?
+    """, (id_turma,))
+
+    conn.commit()
+    conn.close()
+
+
+def listar_professores_aprovados(id_escola):
+    """Lista professores aprovados da escola (para dropdown ao criar turma)"""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT id_professor, nome
+    FROM Professor
+    WHERE id_escola = ? AND status_escola = 'aprovado'
+    ORDER BY nome
+    """, (id_escola,))
+
+    professores = cursor.fetchall()
+    conn.close()
+
+    return professores
+
+def buscar_turma(id_turma):
+    """Busca dados completos de uma turma"""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM Turma WHERE id_turma = ?",
+        (id_turma,)
+    )
+
+    turma = cursor.fetchone()
+    conn.close()
+
+    return turma
