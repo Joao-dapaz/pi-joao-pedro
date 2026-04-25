@@ -28,6 +28,7 @@
                 <select id="tipoConta" onchange="mudarRota()">
                     <option value="aluno">Aluno</option>
                     <option value="professor">Professor</option>
+                    <option value="admin">Administrador</option>
                 </select>
             
                 <label>Email:</label>
@@ -65,9 +66,11 @@
     
         if (tipo === "professor") {
             form.action = "/fazer_login_professor";
+        } else if (tipo === "admin") {
+            form.action = "/fazer_login_admin";
         } else {
             form.action = "/fazer_login_aluno";
         }
     }
-    </script>
+</script>
 </html>

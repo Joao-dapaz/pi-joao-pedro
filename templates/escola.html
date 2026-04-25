@@ -39,7 +39,6 @@
 
         <hr>
 
-        
         <div id="sobre" style="display: none; padding-left: 10px; ">
 
             <h2>Sobre a Escola</h2>
@@ -49,6 +48,28 @@
 
         </div>
 
+    </div>
+
+    <div id="subbox" style="display: flex; flex-direction: column; width: max-content; margin-top: 20px;">
+    
+        <h3>📢 Avisos da Escola</h3> 
+        
+        <div style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+            
+            {% if avisos %}
+                {% for aviso in avisos %}
+                <div class="aviso {% if aviso[3] == 'urgente' %}urgente{% endif %}">
+                    <strong>{{ aviso[1] or 'Aviso' }}</strong>
+                    <p style="margin: 5px 0; font-size: 13px;">{{ aviso[2] }}</p>
+                    <small style="color: #666;">{{ aviso[6] }}</small>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p><i>Nenhum aviso no momento.</i></p>
+            {% endif %}
+            
+        </div>
+    
     </div>
 
 </div>

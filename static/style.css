@@ -218,3 +218,12 @@ button:hover {
     border-radius: 12px;
     width: 100%;
 }
+.aviso {
+    background: #f0f0f0;
+    border-left: 4px solid #3E5F47;
+}
+
+.aviso.urgente {
+    background: #ffcccc;
+    border-left: 4px solid #ff0000;
+}

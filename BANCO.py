@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS Professor (
     telefone TEXT,
     proficiencia TEXT,
     id_escola INTEGER NOT NULL,
-    status_escola TEXT DEFAULT 'pendente',
+    status_escola TEXT DEFAULT 'aprovado',
     data_aprovacao TEXT,
     FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
 )
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS Aluno (
     telefone TEXT,
     senha TEXT NOT NULL,
     id_escola INTEGER,
-    status_escola TEXT DEFAULT 'pendente',
+    status_escola TEXT DEFAULT 'aprovado',
     data_aprovacao TEXT,
     FOREIGN KEY (id_escola) REFERENCES Escola(id_escola)
 )

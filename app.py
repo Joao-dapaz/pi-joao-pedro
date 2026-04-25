@@ -104,8 +104,9 @@ def escola():
     id_escola = session["id_escola"]
 
     escola = model.buscar_escola(id_escola)
+    avisos = model.listar_avisos_escola(id_escola)
 
-    return render_template("escola.html", escola=escola)
+    return render_template("escola.html", escola=escola, avisos=avisos)
 
 
 @app.route("/turmas")
