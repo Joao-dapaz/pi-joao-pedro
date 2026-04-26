@@ -81,9 +81,7 @@
                 </div>
                 
                 <div class="aviso-acoes">
-                    <a href="/admin/avisos/{{ aviso[0] }}/editar" class="btn-aviso btn-editar">✏️ Editar</a>
-                    
-                    <form action="/admin/avisos/{{ aviso[0] }}/deletar" method="POST" style="display: inline;">
+                    <form action="/admin/avisos/{{ aviso[0] }}/deletar" method="POST" style="display: contents;">
                         <button type="submit" class="btn-aviso btn-deletar" onclick="return confirm('Tem certeza que deseja deletar este aviso?')">🗑️ Deletar</button>
                     </form>
                 </div>

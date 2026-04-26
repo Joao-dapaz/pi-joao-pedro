@@ -10,17 +10,19 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-    
-app.secret_key = "WOAAHH"
+
+app.secret_key = os.environ.get("SECRET_KEY", " when candles burn out and the record is faded down I know you've got people to turn to")
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
 @app.route("/cadastrar")
 def cadastrar():
     return render_template("cadastrar.html")
+
 
 @app.route("/login")
 def login():
@@ -29,13 +31,9 @@ def login():
 
 @app.route("/conexao_escola")
 def conexao_escola():
-
     escolas = model.listar_escolas()
+    return render_template("conexao_escola.html", escolas=escolas)
 
-    return render_template(
-        "conexao_escola.html",
-        escolas=escolas
-    )
 
 @app.route("/professor", methods=["GET", "POST"])
 def professor():
@@ -43,8 +41,26 @@ def professor():
         return redirect("/login")
 
     if request.method == "POST":
-        # ... código do POST ...
-        return redirect("/professor")  
+        titulo = request.form["titulo"]
+        descricao = request.form["descricao"]
+        id_turma = request.form["id_turma"]
+        id_professor = session["professor_id"]
+        arquivo = request.files.get("arquivo")
+
+        caminho_arquivo = None
+        if arquivo and arquivo.filename != "":
+            caminho = os.path.join(app.config["UPLOAD_FOLDER"], arquivo.filename)
+            arquivo.save(caminho)
+            caminho_arquivo = caminho
+
+        resultado = service.publicar_material_professor(
+            titulo, descricao, caminho_arquivo, id_turma, id_professor
+        )
+
+        if not resultado["sucesso"]:
+            flash(resultado["mensagem"])
+
+        return redirect("/professor")
 
     id_professor = session["professor_id"]
     id_escola = session["id_escola"]
@@ -58,10 +74,8 @@ def professor():
 
     for m in materiais:
         id_turma = m[3]
-
         if id_turma not in materiais_por_turma:
             materiais_por_turma[id_turma] = []
-
         materiais_por_turma[id_turma].append(m)
 
     return render_template(
@@ -72,9 +86,9 @@ def professor():
         avisos=avisos
     )
 
+
 @app.route("/escola")
 def escola():
-
     if "aluno_id" not in session:
         return redirect("/")
 
@@ -88,13 +102,12 @@ def escola():
 
 @app.route("/turmas")
 def turmas():
-
     if "aluno_id" not in session:
         return redirect("/")
 
     id_aluno = session["aluno_id"]
     id_escola = session["id_escola"]
-   
+
     turmas, escola, materiais_por_turma = service.buscar_dados_turmas_aluno(id_aluno, id_escola)
 
     return render_template(
@@ -107,7 +120,6 @@ def turmas():
 
 @app.route("/turma/<int:id_turma>/pessoas")
 def turma_pessoas(id_turma):
-
     dados = service.buscar_pessoas_da_turma(id_turma, session)
 
     if dados is None:
@@ -120,36 +132,34 @@ def turma_pessoas(id_turma):
         alunos=dados["alunos"],
         origem=dados["origem"]
     )
-    
+
 
 @app.route("/fazer_login_aluno", methods=["POST"])
 def fazer_login_aluno():
     email = request.form["email"]
     senha = request.form["senha"]
-    
+
     aluno = model.aluno_login(email, senha)
-    
+
     if not aluno:
         flash("Email ou senha inválidos.")
         return redirect("/login")
-    
-    # Verifica status_escola
-    if aluno[7] == 'pendente':  # status_escola é a coluna 7
+
+    if aluno[7] == 'pendente':
         flash("Sua solicitação está em análise. Aguarde aprovação do administrador.")
         return redirect("/login")
-    
-    if aluno[7] == 'rejeitado':  # status_escola
+
+    if aluno[7] == 'rejeitado':
         flash("Sua solicitação foi rejeitada. Entre em contato com a escola.")
         return redirect("/login")
-    
-    # Se aprovado, continua o fluxo normal
+
     resultado = service.fazer_login_aluno(email, senha)
-    
+
     if resultado["sucesso"]:
         session["aluno_id"] = resultado["aluno_id"]
         session["id_escola"] = resultado["id_escola"]
         return redirect("/escola")
-    
+
     flash(resultado["mensagem"])
     return redirect("/login")
 
@@ -158,14 +168,14 @@ def fazer_login_aluno():
 def fazer_login_professor():
     email = request.form["email"]
     senha = request.form["senha"]
-    
+
     resultado = service.fazer_login_professor(email, senha)
-    
+
     if resultado["sucesso"]:
         session["professor_id"] = resultado["professor_id"]
         session["id_escola"] = resultado["id_escola"]
         return redirect("/professor")
-    
+
     flash(resultado["mensagem"])
     return redirect("/login")
 
@@ -181,23 +191,22 @@ def cadastrar_aluno():
     cadastro = model.cadastro_aluno(nome, email, endereco, telefone, senha, None)
 
     if cadastro:
-        # Pega o ID do aluno recém criado
         aluno = model.aluno_login(email, senha)
         if aluno:
-            # Cria solicitação pendente
             model.inserir_solicitacao_aluno(aluno[0], None)
-        
+
         flash("Sua solicitação foi enviada! Aguarde aprovação do administrador da escola.")
         return redirect("/login")
     else:
         flash("Email já cadastrado.")
         return redirect("/cadastrar")
 
+
 @app.route("/logout")
 def logout():
-
     session.clear()
     return redirect("/")
+
 
 # ===== ROTAS DO ADMIN =====
 
@@ -210,14 +219,14 @@ def admin_login():
 def fazer_login_admin():
     email = request.form["email"]
     senha = request.form["senha"]
-    
+
     resultado = service.fazer_login_admin(email, senha)
-    
+
     if resultado["sucesso"]:
         session["admin_id"] = resultado["admin_id"]
         session["id_escola"] = resultado["id_escola"]
         return redirect("/admin/dashboard")
-    
+
     flash(resultado["mensagem"])
     return redirect("/admin/login")
 
@@ -226,16 +235,11 @@ def fazer_login_admin():
 def admin_dashboard():
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
+
     id_escola = session["id_escola"]
-    
-    
     stats = service.buscar_dashboard_admin(id_escola)
-    
-    return render_template(
-        "dashboard_admin.html",
-        stats=stats
-    )
+
+    return render_template("dashboard_admin.html", stats=stats)
 
 
 # ===== SOLICITAÇÕES ALUNOS E PROFESSORES =====
@@ -244,19 +248,17 @@ def admin_dashboard():
 def admin_solicitacoes():
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
+
     id_escola = session["id_escola"]
-    
-    # Alunos
-    alunos_pendentes = service.listar_solicitacoes_alunos(id_escola, 'pendente')
-    alunos_aprovados = service.listar_solicitacoes_alunos(id_escola, 'aprovado')
+
+    alunos_pendentes  = service.listar_solicitacoes_alunos(id_escola, 'pendente')
+    alunos_aprovados  = service.listar_solicitacoes_alunos(id_escola, 'aprovado')
     alunos_rejeitados = service.listar_solicitacoes_alunos(id_escola, 'rejeitado')
-    
-    # Professores
-    profs_pendentes = service.listar_solicitacoes_professores(id_escola, 'pendente')
-    profs_aprovados = service.listar_solicitacoes_professores(id_escola, 'aprovado')
+
+    profs_pendentes  = service.listar_solicitacoes_professores(id_escola, 'pendente')
+    profs_aprovados  = service.listar_solicitacoes_professores(id_escola, 'aprovado')
     profs_rejeitados = service.listar_solicitacoes_professores(id_escola, 'rejeitado')
-    
+
     return render_template(
         "solicitacoes_admin.html",
         alunos_pendentes=alunos_pendentes,
@@ -272,12 +274,8 @@ def admin_solicitacoes():
 def admin_aprovar_aluno(id_aluno):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    id_admin = session["admin_id"]
-    id_escola = session["id_escola"]
-    
-    service.aprovar_aluno(id_aluno, id_escola, id_admin)
-    
+
+    service.aprovar_aluno(id_aluno, session["id_escola"], session["admin_id"])
     flash("Aluno aprovado com sucesso!")
     return redirect("/admin/solicitacoes")
 
@@ -286,13 +284,9 @@ def admin_aprovar_aluno(id_aluno):
 def admin_rejeitar_aluno(id_aluno):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    id_admin = session["admin_id"]
-    id_escola = session["id_escola"]
+
     mensagem = request.form.get("mensagem", "")
-    
-    service.rejeitar_aluno(id_aluno, id_escola, id_admin, mensagem)
-    
+    service.rejeitar_aluno(id_aluno, session["id_escola"], session["admin_id"], mensagem)
     flash("Aluno rejeitado!")
     return redirect("/admin/solicitacoes")
 
@@ -301,12 +295,8 @@ def admin_rejeitar_aluno(id_aluno):
 def admin_aprovar_professor(id_professor):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    id_admin = session["admin_id"]
-    id_escola = session["id_escola"]
-    
-    service.aprovar_professor(id_professor, id_escola, id_admin)
-    
+
+    service.aprovar_professor(id_professor, session["id_escola"], session["admin_id"])
     flash("Professor aprovado com sucesso!")
     return redirect("/admin/solicitacoes")
 
@@ -315,15 +305,12 @@ def admin_aprovar_professor(id_professor):
 def admin_rejeitar_professor(id_professor):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    id_admin = session["admin_id"]
-    id_escola = session["id_escola"]
+
     mensagem = request.form.get("mensagem", "")
-    
-    service.rejeitar_professor(id_professor, id_escola, id_admin, mensagem)
-    
+    service.rejeitar_professor(id_professor, session["id_escola"], session["admin_id"], mensagem)
     flash("Professor rejeitado!")
     return redirect("/admin/solicitacoes")
+
 
 # ===== AVISOS =====
 
@@ -331,86 +318,38 @@ def admin_rejeitar_professor(id_professor):
 def admin_avisos():
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    
-    avisos = service.listar_avisos(id_escola)
-    
-    return render_template(
-        "avisos_admin.html",
-        avisos=avisos
-    )
+
+    avisos = service.listar_avisos(session["id_escola"])
+    return render_template("avisos_admin.html", avisos=avisos)
 
 
 @app.route("/admin/avisos/novo", methods=["POST"])
 def admin_aviso_novo():
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
-    titulo = request.form.get("titulo", "")
-    conteudo = request.form["conteudo"]
+
+    titulo    = request.form.get("titulo", "")
+    conteudo  = request.form["conteudo"]
     prioridade = request.form.get("prioridade", "normal")
-    arquivo = request.files.get("arquivo")
-    
-    id_admin = session["admin_id"]
-    id_escola = session["id_escola"]
-    
+    arquivo   = request.files.get("arquivo")
+
     caminho_arquivo = None
     if arquivo and arquivo.filename != "":
         caminho = os.path.join(app.config["UPLOAD_FOLDER"], "avisos", arquivo.filename)
         os.makedirs(os.path.dirname(caminho), exist_ok=True)
         arquivo.save(caminho)
         caminho_arquivo = caminho
-    
-    service.criar_aviso(titulo, conteudo, prioridade, caminho_arquivo, id_admin, id_escola)
-    
+
+    service.criar_aviso(titulo, conteudo, prioridade, caminho_arquivo, session["admin_id"], session["id_escola"])
     flash("Aviso publicado com sucesso!")
     return redirect("/admin/avisos")
-
-
-@app.route("/admin/avisos/<int:id_aviso>/editar", methods=["GET", "POST"])
-def admin_aviso_editar(id_aviso):
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    aviso = model.buscar_aviso(id_aviso)
-    
-    if not aviso:
-        flash("Aviso não encontrado!")
-        return redirect("/admin/avisos")
-    
-    if request.method == "POST":
-        titulo = request.form.get("titulo", "")
-        conteudo = request.form["conteudo"]
-        prioridade = request.form.get("prioridade", "normal")
-        arquivo = request.files.get("arquivo")
-        
-        caminho_arquivo = aviso[4]  
-        
-        if arquivo and arquivo.filename != "":
-            caminho = os.path.join(app.config["UPLOAD_FOLDER"], "avisos", arquivo.filename)
-            os.makedirs(os.path.dirname(caminho), exist_ok=True)
-            arquivo.save(caminho)
-            caminho_arquivo = caminho
-        
-        service.editar_aviso(id_aviso, titulo, conteudo, prioridade, caminho_arquivo)
-        
-        flash("Aviso atualizado com sucesso!")
-        return redirect("/admin/avisos")
-    
-    return render_template(
-        "admin_aviso_editar.html",
-        aviso=aviso
-    )
-
 
 @app.route("/admin/avisos/<int:id_aviso>/deletar", methods=["POST"])
 def admin_deletar_aviso(id_aviso):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
+
     service.deletar_aviso(id_aviso)
-    
     flash("Aviso deletado!")
     return redirect("/admin/avisos")
 
@@ -421,78 +360,23 @@ def admin_deletar_aviso(id_aviso):
 def admin_turmas():
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
+
     id_escola = session["id_escola"]
-    
     turmas = model.listar_turmas_por_escola(id_escola)
-    
-    return render_template(
-        "turmas_admin.html",
-        turmas=turmas
-    )
-
-
-@app.route("/admin/turmas/nova", methods=["GET", "POST"])
-def admin_turma_nova():
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
     professores = service.listar_professores_aprovados(id_escola)
-    
-    if request.method == "POST":
-        nome = request.form["nome"]
-        descricao = request.form["descricao"]
-        especialidade = request.form["especialidade"]
-        id_professor = request.form["id_professor"]
-        
-        service.criar_turma_admin(nome, descricao, especialidade, int(id_professor), id_escola)
-        
-        flash("Turma criada com sucesso!")
-        return redirect("/admin/turmas")
-    
-    return render_template(
-        "admin_turma_nova.html",
-        professores=professores
-    )
 
-
-@app.route("/admin/turmas/<int:id_turma>/editar", methods=["GET", "POST"])
-def admin_turma_editar(id_turma):
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    turma = model.buscar_turma(id_turma)
-    professores = service.listar_professores_aprovados(id_escola)
-    
-    if request.method == "POST":
-        nome = request.form["nome"]
-        descricao = request.form["descricao"]
-        especialidade = request.form["especialidade"]
-        id_professor = request.form["id_professor"]
-        
-        service.editar_turma(id_turma, nome, descricao, especialidade, int(id_professor))
-        
-        flash("Turma atualizada!")
-        return redirect("/admin/turmas")
-    
-    return render_template(
-        "admin_turma_editar.html",
-        turma=turma,
-        professores=professores
-    )
+    return render_template("turmas_admin.html", turmas=turmas, professores=professores) 
 
 
 @app.route("/admin/turmas/<int:id_turma>/deletar", methods=["POST"])
 def admin_deletar_turma(id_turma):
     if "admin_id" not in session:
         return redirect("/admin/login")
-    
+
     service.deletar_turma(id_turma)
-    
     flash("Turma deletada!")
     return redirect("/admin/turmas")
+
 
 if __name__ == "__main__":
     app.run(debug=True)

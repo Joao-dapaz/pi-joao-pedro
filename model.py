@@ -429,7 +429,6 @@ def inserir_solicitacao_professor(id_professor, id_escola=None):
         conn.close()
         return False
 
-
 def listar_solicitacoes_professores(id_escola, status=None):
     conn = conectar()
     cursor = conn.cursor()

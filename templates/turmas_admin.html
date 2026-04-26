@@ -60,15 +60,14 @@
         {% if turmas %}
             {% for turma in turmas %}
             <div class="turma-card">
-                <div class="turma-nome">{{ turma[1] }}</div>
-                <div class="turma-info"><strong>Especialidade:</strong> {{ turma[3] }}</div>
+                <div class="turma-nome"style="font-size: 25px; font-weight:bold;">{{ turma[1] }}</div>
+                <hr>
                 <div class="turma-info"><strong>Professor:</strong> {{ turma[3] }}</div>
                 <div class="turma-info">{{ turma[2] }}</div>
-                
+
                 <div class="turma-acoes">
-                    <a href="/admin/turmas/{{ turma[0] }}/editar" class="btn-turma btn-editar">✏️ Editar</a>
                     
-                    <form action="/admin/turmas/{{ turma[0] }}/deletar" method="POST" style="display: inline;">
+                    <form action="/admin/turmas/{{ turma[0] }}/deletar" method="POST" style="display: contents;">
                         <button type="submit" class="btn-turma btn-deletar" onclick="return confirm('Tem certeza?')">🗑️ Deletar</button>
                     </form>
                 </div>
