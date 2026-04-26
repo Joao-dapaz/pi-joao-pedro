@@ -43,32 +43,7 @@ def professor():
         return redirect("/login")
 
     if request.method == "POST":
-
-        titulo = request.form["titulo"]
-        descricao = request.form["descricao"]
-        id_turma = int(request.form["id_turma"])
-        arquivo = request.files["arquivo"]
-
-        if arquivo and arquivo.filename != "":
-            caminho = os.path.join(app.config["UPLOAD_FOLDER"], arquivo.filename)
-            arquivo.save(caminho)
-        else:
-            caminho = None
-
-        from datetime import datetime
-        data_envio = datetime.now().strftime("%Y-%m-%d")
-
-        id_professor = session["professor_id"]
-
-        model.publicar_material(
-            titulo,
-            descricao,
-            caminho,  
-            data_envio,
-            id_turma,
-            id_professor
-        )
-
+        # ... código do POST ...
         return redirect("/professor")  
 
     id_professor = session["professor_id"]
@@ -77,6 +52,7 @@ def professor():
     escola = model.buscar_escola(id_escola)
     turmas = model.listar_turmas_do_professor(id_professor)
     materiais = model.listar_materiais_professor(id_professor)
+    avisos = model.listar_avisos_escola(id_escola)
 
     materiais_por_turma = {}
 
@@ -92,7 +68,8 @@ def professor():
         "professor.html",
         escola=escola,
         turmas=turmas,
-        materiais_por_turma=materiais_por_turma
+        materiais_por_turma=materiais_por_turma,
+        avisos=avisos
     )
 
 @app.route("/escola")
@@ -226,7 +203,7 @@ def logout():
 
 @app.route("/admin/login")
 def admin_login():
-    return render_template("admin_login.html")
+    return render_template("login.html")
 
 
 @app.route("/fazer_login_admin", methods=["POST"])
@@ -256,42 +233,38 @@ def admin_dashboard():
     stats = service.buscar_dashboard_admin(id_escola)
     
     return render_template(
-        "admin_dashboard.html",
+        "dashboard_admin.html",
         stats=stats
     )
 
 
-# ===== SOLICITAÇÕES ALUNOS =====
+# ===== SOLICITAÇÕES ALUNOS E PROFESSORES =====
 
-@app.route("/admin/solicitacoes/alunos")
-def admin_solicitacoes_alunos():
+@app.route("/admin/solicitacoes")
+def admin_solicitacoes():
     if "admin_id" not in session:
         return redirect("/admin/login")
     
     id_escola = session["id_escola"]
     
-    solicitacoes_pendentes = service.listar_solicitacoes_alunos(id_escola, 'pendente')
-    solicitacoes_aprovadas = service.listar_solicitacoes_alunos(id_escola, 'aprovado')
+    # Alunos
+    alunos_pendentes = service.listar_solicitacoes_alunos(id_escola, 'pendente')
+    alunos_aprovados = service.listar_solicitacoes_alunos(id_escola, 'aprovado')
+    alunos_rejeitados = service.listar_solicitacoes_alunos(id_escola, 'rejeitado')
+    
+    # Professores
+    profs_pendentes = service.listar_solicitacoes_professores(id_escola, 'pendente')
+    profs_aprovados = service.listar_solicitacoes_professores(id_escola, 'aprovado')
+    profs_rejeitados = service.listar_solicitacoes_professores(id_escola, 'rejeitado')
     
     return render_template(
-        "admin_solicitacoes_alunos.html",
-        pendentes=solicitacoes_pendentes,
-        aprovados=solicitacoes_aprovadas
-    )
-
-
-@app.route("/admin/alunos/rejeitados")
-def admin_alunos_rejeitados():
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    
-    solicitacoes_rejeitadas = service.listar_solicitacoes_alunos(id_escola, 'rejeitado')
-    
-    return render_template(
-        "admin_alunos_rejeitados.html",
-        rejeitados=solicitacoes_rejeitadas
+        "solicitacoes_admin.html",
+        alunos_pendentes=alunos_pendentes,
+        alunos_aprovados=alunos_aprovados,
+        alunos_rejeitados=alunos_rejeitados,
+        profs_pendentes=profs_pendentes,
+        profs_aprovados=profs_aprovados,
+        profs_rejeitados=profs_rejeitados
     )
 
 
@@ -305,11 +278,11 @@ def admin_revisar_aluno(id_aluno):
     dados = service.revisar_aluno(id_aluno, id_escola)
     
     return render_template(
-        "admin_aluno_revisar.html",
-        aluno=dados["aluno"],
+        "admin_revisar.html",
+        tipo="aluno",
+        dados=dados["aluno"],
         solicitacao=dados["solicitacao"]
     )
-
 
 @app.route("/admin/aluno/<int:id_aluno>/aprovar", methods=["POST"])
 def admin_aprovar_aluno(id_aluno):
@@ -322,7 +295,7 @@ def admin_aprovar_aluno(id_aluno):
     service.aprovar_aluno(id_aluno, id_escola, id_admin)
     
     flash("Aluno aprovado com sucesso!")
-    return redirect("/admin/solicitacoes/alunos")
+    return redirect("/admin/solicitacoes")
 
 
 @app.route("/admin/aluno/<int:id_aluno>/rejeitar", methods=["POST"])
@@ -337,27 +310,7 @@ def admin_rejeitar_aluno(id_aluno):
     service.rejeitar_aluno(id_aluno, id_escola, id_admin, mensagem)
     
     flash("Aluno rejeitado!")
-    return redirect("/admin/solicitacoes/alunos")
-
-
-# ===== SOLICITAÇÕES PROFESSORES =====
-
-@app.route("/admin/solicitacoes/professores")
-def admin_solicitacoes_professores():
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    
-    solicitacoes_pendentes = service.listar_solicitacoes_professores(id_escola, 'pendente')
-    solicitacoes_aprovadas = service.listar_solicitacoes_professores(id_escola, 'aprovado')
-    
-    return render_template(
-        "admin_solicitacoes_professores.html",
-        pendentes=solicitacoes_pendentes,
-        aprovados=solicitacoes_aprovadas
-    )
-
+    return redirect("/admin/solicitacoes")
 
 @app.route("/admin/professor/<int:id_professor>/revisar")
 def admin_revisar_professor(id_professor):
@@ -369,11 +322,11 @@ def admin_revisar_professor(id_professor):
     dados = service.revisar_professor(id_professor, id_escola)
     
     return render_template(
-        "admin_professor_revisar.html",
-        professor=dados["professor"],
+        "admin_revisar.html",
+        tipo="professor",
+        dados=dados["professor"],
         solicitacao=dados["solicitacao"]
     )
-
 
 @app.route("/admin/professor/<int:id_professor>/aprovar", methods=["POST"])
 def admin_aprovar_professor(id_professor):
@@ -386,7 +339,7 @@ def admin_aprovar_professor(id_professor):
     service.aprovar_professor(id_professor, id_escola, id_admin)
     
     flash("Professor aprovado com sucesso!")
-    return redirect("/admin/solicitacoes/professores")
+    return redirect("/admin/solicitacoes")
 
 
 @app.route("/admin/professor/<int:id_professor>/rejeitar", methods=["POST"])
@@ -401,8 +354,7 @@ def admin_rejeitar_professor(id_professor):
     service.rejeitar_professor(id_professor, id_escola, id_admin, mensagem)
     
     flash("Professor rejeitado!")
-    return redirect("/admin/solicitacoes/professores")
-
+    return redirect("/admin/solicitacoes")
 
 # ===== AVISOS =====
 
@@ -416,38 +368,35 @@ def admin_avisos():
     avisos = service.listar_avisos(id_escola)
     
     return render_template(
-        "admin_avisos.html",
+        "avisos_admin.html",
         avisos=avisos
     )
 
 
-@app.route("/admin/avisos/novo", methods=["GET", "POST"])
+@app.route("/admin/avisos/novo", methods=["POST"])
 def admin_aviso_novo():
     if "admin_id" not in session:
         return redirect("/admin/login")
     
-    if request.method == "POST":
-        titulo = request.form.get("titulo", "")
-        conteudo = request.form["conteudo"]
-        prioridade = request.form.get("prioridade", "normal")
-        arquivo = request.files.get("arquivo")
-        
-        id_admin = session["admin_id"]
-        id_escola = session["id_escola"]
-        
-        caminho_arquivo = None
-        if arquivo and arquivo.filename != "":
-            caminho = os.path.join(app.config["UPLOAD_FOLDER"], "avisos", arquivo.filename)
-            os.makedirs(os.path.dirname(caminho), exist_ok=True)
-            arquivo.save(caminho)
-            caminho_arquivo = caminho
-        
-        service.criar_aviso(titulo, conteudo, prioridade, caminho_arquivo, id_admin, id_escola)
-        
-        flash("Aviso publicado com sucesso!")
-        return redirect("/admin/avisos")
+    titulo = request.form.get("titulo", "")
+    conteudo = request.form["conteudo"]
+    prioridade = request.form.get("prioridade", "normal")
+    arquivo = request.files.get("arquivo")
     
-    return render_template("admin_aviso_novo.html")
+    id_admin = session["admin_id"]
+    id_escola = session["id_escola"]
+    
+    caminho_arquivo = None
+    if arquivo and arquivo.filename != "":
+        caminho = os.path.join(app.config["UPLOAD_FOLDER"], "avisos", arquivo.filename)
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        arquivo.save(caminho)
+        caminho_arquivo = caminho
+    
+    service.criar_aviso(titulo, conteudo, prioridade, caminho_arquivo, id_admin, id_escola)
+    
+    flash("Aviso publicado com sucesso!")
+    return redirect("/admin/avisos")
 
 
 @app.route("/admin/avisos/<int:id_aviso>/editar", methods=["GET", "POST"])
@@ -509,7 +458,7 @@ def admin_turmas():
     turmas = model.listar_turmas_por_escola(id_escola)
     
     return render_template(
-        "admin_turmas.html",
+        "turmas_admin.html",
         turmas=turmas
     )
 

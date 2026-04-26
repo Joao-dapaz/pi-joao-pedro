@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Maestro - Solicitações</title>
+</head>
+<body>
+
+<div id="container1">
+
+    <div id="divtopo">
+        <h1>Solicitações 📋</h1>
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a> |
+            <a href="/admin/turmas">Turmas</a> |
+            <a href="/admin/avisos">Avisos</a> |
+            <a href="/logout">Sair</a>
+        </nav>
+    </div>
+
+    <hr>
+
+    <div id="subbox" style="flex-direction: column;">
+
+        <!-- ABAS -->
+        <div style="margin-bottom: 20px;">
+            <button class="tab-btn active" onclick="abrirAba(event, 'alunos-pendentes')">👥 Alunos Pendentes ({{ alunos_pendentes|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'alunos-aprovados')">✅ Alunos Aprovados ({{ alunos_aprovados|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'alunos-rejeitados')">❌ Alunos Rejeitados ({{ alunos_rejeitados|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-pendentes')">👨‍🏫 Professores Pendentes ({{ profs_pendentes|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-aprovados')">✅ Professores Aprovados ({{ profs_aprovados|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-rejeitados')">❌ Professores Rejeitados ({{ profs_rejeitados|length }})</button>
+        </div>
+
+        <!-- ALUNOS PENDENTES -->
+        <div id="alunos-pendentes" class="tab-content active">
+            <h3>Alunos Pendentes de Aprovação</h3>
+            {% if alunos_pendentes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data Solicitação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos_pendentes %}
+                    <tr>
+                        <td>{{ aluno[1] }}</td>
+                        <td>{{ aluno[2] }}</td>
+                        <td>{{ aluno[3] }}</td>
+                        <td>{{ aluno[6] }}</td>
+                        <td>
+                            <a href="/admin/aluno/{{ aluno[0] }}/revisar" class="btn-acao btn-revisar">Ver Detalhes</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum aluno pendente.</i></p>
+            {% endif %}
+        </div>
+
+        <!-- ALUNOS APROVADOS -->
+        <div id="alunos-aprovados" class="tab-content">
+            <h3>Alunos Aprovados</h3>
+            {% if alunos_aprovados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data Aprovação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos_aprovados %}
+                    <tr>
+                        <td>{{ aluno[1] }}</td>
+                        <td>{{ aluno[2] }}</td>
+                        <td>{{ aluno[3] }}</td>
+                        <td>{{ aluno[6] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum aluno aprovado.</i></p>
+            {% endif %}
+        </div>
+
+        <!-- ALUNOS REJEITADOS -->
+        <div id="alunos-rejeitados" class="tab-content">
+            <h3>Alunos Rejeitados</h3>
+            {% if alunos_rejeitados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data Rejeição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos_rejeitados %}
+                    <tr>
+                        <td>{{ aluno[1] }}</td>
+                        <td>{{ aluno[2] }}</td>
+                        <td>{{ aluno[3] }}</td>
+                        <td>{{ aluno[6] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum aluno rejeitado.</i></p>
+            {% endif %}
+        </div>
+
+        <!-- PROFESSORES PENDENTES -->
+        <div id="profs-pendentes" class="tab-content">
+            <h3>Professores Pendentes de Aprovação</h3>
+            {% if profs_pendentes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Proficiência</th>
+                        <th>Data Solicitação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prof in profs_pendentes %}
+                    <tr>
+                        <td>{{ prof[1] }}</td>
+                        <td>{{ prof[2] }}</td>
+                        <td>{{ prof[3] }}</td>
+                        <td>{{ prof[4] }}</td>
+                        <td>{{ prof[6] }}</td>
+                        <td>
+                            <a href="/admin/professor/{{ prof[0] }}/revisar" class="btn-acao btn-revisar">Ver Detalhes</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum professor pendente.</i></p>
+            {% endif %}
+        </div>
+
+        <!-- PROFESSORES APROVADOS -->
+        <div id="profs-aprovados" class="tab-content">
+            <h3>Professores Aprovados</h3>
+            {% if profs_aprovados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Proficiência</th>
+                        <th>Data Aprovação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prof in profs_aprovados %}
+                    <tr>
+                        <td>{{ prof[1] }}</td>
+                        <td>{{ prof[2] }}</td>
+                        <td>{{ prof[3] }}</td>
+                        <td>{{ prof[4] }}</td>
+                        <td>{{ prof[6] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum professor aprovado.</i></p>
+            {% endif %}
+        </div>
+
+        <!-- PROFESSORES REJEITADOS -->
+        <div id="profs-rejeitados" class="tab-content">
+            <h3>Professores Rejeitados</h3>
+            {% if profs_rejeitados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Proficiência</th>
+                        <th>Data Rejeição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prof in profs_rejeitados %}
+                    <tr>
+                        <td>{{ prof[1] }}</td>
+                        <td>{{ prof[2] }}</td>
+                        <td>{{ prof[4] }}</td>
+                        <td>{{ prof[6] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><i>Nenhum professor rejeitado.</i></p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function abrirAba(evt, nomeAba) {
+        // Esconde todos os conteúdos
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tab => tab.classList.remove('active'));
+
+        // Remove classe active de todos os botões
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => btn.classList.remove('active'));
+
+        // Mostra a aba desejada
+        document.getElementById(nomeAba).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

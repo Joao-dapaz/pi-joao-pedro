@@ -1,6 +1,15 @@
 import sqlite3
 from model import conectar
+import os
 
+def resetar_banco(escola_db):
+    if os.path.exists(escola_db):
+        os.remove(escola_db)
+        print("Banco de dados apagado com sucesso.")
+    else:
+        print("Banco não existe, nada para apagar.")
+
+resetar_banco("escola.db")
 conn = conectar()
 cursor = conn.cursor()
 

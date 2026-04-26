@@ -1,53 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
     <link rel="stylesheet" href="/static/style.css">
+
     <title>Maestro - Conexões musicais</title>
 </head>
 
 <body>
+
     <div id="container1">
 
         <div id="divtopo">
-
             <h1>{{ escola[0] }}</h1>
 
             <nav>
                 <a href="#" onclick="toggleSobre()">Sobre a Escola</a> |
                 <a href="/logout">Sair</a>
             </nav>
-
         </div>
 
-        <div id="subbox" style="flex-direction: column;">
+        <div style="display: flex;flex-direction: row;">
 
-            <div>
-                <h2>Painel do Professor 👨‍🏫</h2>
-            </div>
-
-            <div id="sobre" style="display: none; padding-left: 10px;">
-
-                <h3>Sobre a Escola</h3>
+            <div id="sobre" style="display: none; padding-left: 10px; margin-right: 20px;">
+                <h3>Sobre a Escola :</h3>
 
                 <p><strong>Endereço:</strong> {{ escola[2] }}</p>
                 <p><strong>Telefone:</strong> {{ escola[3] }}</p>
-
             </div>
+
+            <div id="subbox" style="flex-direction: column; width: max-content;">
+                <h3>📢 Avisos da Escola</h3>
+
+                <div style="max-height: 250px;max-width: max-content; overflow-y: auto; margin-bottom: 20px;">
+                    {% if avisos %}
+                        {% for aviso in avisos %}
+                        <div class="aviso {% if aviso[3] == 'urgente' %}urgente{% endif %}">
+                            <strong>{{ aviso[1] or 'Aviso' }}</strong>
+                            <p style="margin: 5px 0; font-size: 13px;">{{ aviso[2] }}</p>
+                            <small style="color: #666;">{{ aviso[6] }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p><i>Nenhum aviso no momento.</i></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id="subbox" style="flex-direction: column; margin-top: 20px;">
+
+            <h2>Painel do Professor 👨‍🏫</h2>
 
             <hr>
 
             <h3>Suas Turmas</h3>
+
             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                
-            {% for id_turma, nome, descricao in turmas %}
+
+                {% for id_turma, nome, descricao in turmas %}
 
                 <div id="divturmas">
 
@@ -68,43 +84,47 @@
                         </button>
 
                         <div id="form-{{ id_turma }}" style="display:none; margin-top:10px;">
-                            
+
                             <form action="/professor" method="POST" enctype="multipart/form-data">
-                                
+
                                 <input type="hidden" name="id_turma" value="{{ id_turma }}">
-                        
-                                <input type="text" name="titulo" placeholder="Título" required >
-                        
-                                <textarea name="descricao" placeholder="Escreva o material..." required ></textarea>
-                        
+
+                                <input type="text" name="titulo" placeholder="Título" required>
+
+                                <textarea name="descricao" placeholder="Escreva o material..." required></textarea>
+
                                 <input type="file" name="arquivo">
-                        
-                                <button type="submit" >Publicar</button>
-                        
+
+                                <button type="submit">Publicar</button>
+
                             </form>
+
                         </div>
+
                         <hr>
+
                         {% if id_turma in materiais_por_turma %}
 
-                        {% for m in materiais_por_turma[id_turma] %}
-                        <div>
-                            <strong>{{ m[0] }}</strong><br>
-                            <span>{{ m[1] }}</span><br>
-                            <small>{{ m[2] }}</small>
+                            {% for m in materiais_por_turma[id_turma] %}
+                            <div>
+                                <strong>{{ m[0] }}</strong><br>
+                                <span>{{ m[1] }}</span><br>
+                                <small>{{ m[2] }}</small>
 
-                            {% if m|length > 4 and m[4] %}
-                                <br>
-                                <a id="pdf" href="/{{ m[4] }}" target="_blank" style="">
-                                    📄 Ver
-                                </a>
-                            {% endif %}
-                        </div>
+                                {% if m|length > 4 and m[4] %}
+                                    <br>
+                                    <a id="pdf" href="/{{ m[4] }}" target="_blank">
+                                        📄 Ver
+                                    </a>
+                                {% endif %}
+                            </div>
                             <hr>
                             {% endfor %}
 
-                            {% else %}
-                                <p><i>Nenhum material ainda.</i></p>
-                            {% endif %}
+                        {% else %}
+                            <p><i>Nenhum material ainda.</i></p>
+                        {% endif %}
+
                     </div>
 
                 </div>
@@ -114,23 +134,24 @@
             </div>
 
         </div>
+
+    </div>
+
 </body>
+
 <script>
-    function toggleSobre() {
-        var sobre = document.getElementById("sobre");
+function toggleSobre() {
+    var sobre = document.getElementById("sobre");
+    sobre.style.display = (sobre.style.display === "none") ? "block" : "none";
+}
 
-        sobre.style.display = (sobre.style.display === "none") ? "block" : "none";
-    }
+function toggleMateriais(id) {
+    var div = document.getElementById("materiais-" + id);
+    div.style.display = (div.style.display === "none") ? "block" : "none";
+}
 
-    function toggleMateriais(id) {
-        var div = document.getElementById("materiais-" + id);
-
-        div.style.display = (div.style.display === "none") ? "block" : "none";
-    }
-
-    function toggleForm(id) {
+function toggleForm(id) {
     var div = document.getElementById("form-" + id);
-
     div.style.display = (div.style.display === "none") ? "block" : "none";
 }
 </script>
