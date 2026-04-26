@@ -26,13 +26,14 @@
     <div id="subbox" style="flex-direction: column;">
 
         <!-- ABAS -->
-        <div style="margin-bottom: 20px;">
-            <button class="tab-btn active" onclick="abrirAba(event, 'alunos-pendentes')">👥 Alunos Pendentes ({{ alunos_pendentes|length }})</button>
-            <button class="tab-btn" onclick="abrirAba(event, 'alunos-aprovados')">✅ Alunos Aprovados ({{ alunos_aprovados|length }})</button>
-            <button class="tab-btn" onclick="abrirAba(event, 'alunos-rejeitados')">❌ Alunos Rejeitados ({{ alunos_rejeitados|length }})</button>
-            <button class="tab-btn" onclick="abrirAba(event, 'profs-pendentes')">👨‍🏫 Professores Pendentes ({{ profs_pendentes|length }})</button>
-            <button class="tab-btn" onclick="abrirAba(event, 'profs-aprovados')">✅ Professores Aprovados ({{ profs_aprovados|length }})</button>
-            <button class="tab-btn" onclick="abrirAba(event, 'profs-rejeitados')">❌ Professores Rejeitados ({{ profs_rejeitados|length }})</button>
+        <div>
+            <button class="tab-btn active" onclick="abrirAba(event, 'alunos-pendentes')" style="margin-bottom: 20px;">👥 Alunos Pendentes ({{ alunos_pendentes|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'alunos-aprovados')" style="margin-bottom: 20px;">✅ Alunos Aprovados ({{ alunos_aprovados|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'alunos-rejeitados')" style="margin-bottom: 20px;">❌ Alunos Rejeitados ({{ alunos_rejeitados|length }})</button>
+            <br>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-pendentes')" >👨‍🏫 Professores Pendentes ({{ profs_pendentes|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-aprovados')" >✅ Professores Aprovados ({{ profs_aprovados|length }})</button>
+            <button class="tab-btn" onclick="abrirAba(event, 'profs-rejeitados')" >❌ Professores Rejeitados ({{ profs_rejeitados|length }})</button>
         </div>
 
         <!-- ALUNOS PENDENTES -->

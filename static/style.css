@@ -149,6 +149,24 @@ form {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+.form-novo-aviso label {
+    font-weight: bold;
+    color: var(--texto-escuro);
+    display: block;
+    margin-bottom: 5px;
+}
+.form-novo-aviso button {
+    background: var(--verde-secundario);
+    color: var(--texto-escuro);
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.form-novo-aviso button:hover {
+    background: var(--verde-hover);
+}
 
 /* ================== TURMAS ================== */
 #divturmas {
@@ -204,7 +222,53 @@ form {
     border-left-color: red;
     background: #ffebee;
 }
-
+.aviso-titulo {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--texto-escuro);
+    margin-bottom: 8px;
+}
+.aviso-prioridade {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.prioridade-normal {
+    background: #4CAF50;
+    color: white;
+}
+.prioridade-urgente {
+    background: #f44336;
+    color: white;
+}
+.aviso-conteudo {
+    font-size: 14px;
+    color: #555;
+    margin: 10px 0;
+}
+.aviso-data {
+    font-size: 12px;
+    color: #999;
+    margin: 10px 0;
+}
+.aviso-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.btn-aviso {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
 /* ================== PDF ================== */
 #pdf {
     padding: 10px 18px;
@@ -299,9 +363,30 @@ td {
 /* ================== OUTROS ================== */
 #logo {
     background-color: var(--fundo-suave);
+    padding: 24px;
+    border-radius: 30px;
+    box-shadow: 0 6px 20px var(--sombra);
+ 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+ 
+    width: 450px;
+    height: 350px;
+}
+ 
+#logo img {
+    width: 170px;
+    height: 270px;
+}
+ 
+#logo h1 {
+    margin-top: 12px;
+    font-size: 40px;
+    font-family: 'Times New Roman', Times, serif;
     color: var(--verde-principal);
-    padding: 25px;
-    border-radius: 50px;
+    text-align: center;
 }
 
 #mapa {

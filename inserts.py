@@ -3,7 +3,14 @@ import sqlite3
 conn = sqlite3.connect("escola.db")
 cursor = conn.cursor()
 
-# ESCOLAS
+def inserir(query, dados):
+    try:
+        cursor.execute(query, dados)
+    except sqlite3.IntegrityError as e:
+        print(f"Erro ao inserir: {dados} -> {e}")
+
+
+# ===== ESCOLAS =====
 escolas = [
 ("Escola 1","notavel@escola.com","senha321","Av. Érico Veríssimo, 595",-30.049152728961868,-51.21874701123376,"5199990004","Escola de bateria"),
 ("Escola 2","harmonica@escola.com","senha654","Av. Protásio Alves, 1650",-30.041015752771376,-51.19154753938872,"5199990005","Estudos em teoria musical"),
@@ -16,13 +23,14 @@ escolas = [
 ]
 
 for escola in escolas:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Escola
+    inserir("""
+    INSERT INTO Escola
     (nome,email,senha,endereco,latitude,longitude,telefone,descricao)
     VALUES (?,?,?,?,?,?,?,?)
     """, escola)
 
-# ADMINS (Um por escola)
+
+# ===== ADMINS =====
 admins = [
 ("João Admin 1","admin1@escola.com","senha123","Av. Érico Veríssimo, 595","5199990004",1),
 ("João Admin 2","admin2@escola.com","senha123","Av. Protásio Alves, 1650","5199990005",2),
@@ -35,161 +43,146 @@ admins = [
 ]
 
 for admin in admins:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Admin_Escola
+    inserir("""
+    INSERT INTO Admin_Escola
     (nome,email,senha,endereco,telefone,id_escola,data_criacao)
     VALUES (?,?,?,?,?,?,datetime('now'))
     """, admin)
 
-# PROFESSORES
+
 professores = [
-("Marcos Silva","marcos@escola1.com","senha123","Rua A,100","5199990001","Violão",1),
-("Ana Rocha","ana@escola2.com","senha123","Rua B,200","5199990002","Canto",2),
-("Pedro Martins","pedro@escola3.com","senha123","Rua C,300","5199990003","Teclado",3)
+# aprovados
+("Marcos Silva","marcos@escola1.com","senha123","Rua A,100","5199990001","Violão",1,"aprovado"),
+
+# pendentes
+("Carlos Novo","carlos@prof.com","123","Rua X","5199991111","Guitarra",1,"pendente"),
+("Fernanda Nova","fernanda@prof.com","123","Rua Y","5199992222","Canto",2,"pendente"),
+("Ricardo Novo","ricardo@prof.com","123","Rua Z","5199993333","Bateria",3,"pendente")
 ]
 
-for professor in professores:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Professor
-    (nome,email,senha,endereco,telefone,proficiencia,id_escola)
-    VALUES (?,?,?,?,?,?,?)
-    """, professor)
+for prof in professores:
+    inserir("""
+    INSERT INTO Professor
+    (nome,email,senha,endereco,telefone,proficiencia,id_escola,status_escola)
+    VALUES (?,?,?,?,?,?,?,?)
+    """, prof)
 
-# ATUALIZAR STATUS DE PROFESSORES E CRIAR SOLICITAÇÕES
-cursor.execute("UPDATE Professor SET status_escola = 'aprovado', data_aprovacao = datetime('now') WHERE id_professor IS NOT NULL")
-
-# SOLICITAÇÃO PROFESSOR (Todos já aprovados para manter compatibilidade com testes)
 solicitacoes_professores = [
-(1, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
-(2, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
-(3, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3)
+(1,1,'aprovado'),
+
+(2,1,'pendente'),
+(3,2,'pendente'),
+(4,3,'pendente')
 ]
 
 for sol in solicitacoes_professores:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Solicitacao_Professor
-    (id_professor,id_escola,status,mensagem_recusa,data_solicitacao,data_revisao,id_admin_revisor)
-    VALUES (?,?,?,?,?,?,?)
+    inserir("""
+    INSERT INTO Solicitacao_Professor
+    (id_professor,id_escola,status,data_solicitacao)
+    VALUES (?,?,?,datetime('now'))
     """, sol)
-
-# TURMAS
+    
+# ===== TURMAS =====
 turmas = [
 ("Violão Avançado","Aulas focadas em técnica e repertório.","Violão",1,1),
 ("Canto Iniciante","Introdução ao canto e respiração.","Canto",2,2),
 ("Teclado Intermediário","Leitura musical e harmonização.","Teclado",3,3),
-
 ("Guitarra Rock","Técnicas de guitarra elétrica e solos.","Guitarra",1,1),
 ("Bateria Básica","Ritmos fundamentais para iniciantes.","Bateria",1,1),
 ("Percepção Musical","Treino auditivo e intervalos.","Percepção",1,1),
-
 ("Piano Clássico","Repertório erudito.","Piano",2,2),
 ("Coral Adulto","Canto em grupo.","Coral",2,2),
 ("Violino Iniciante","Postura e afinação.","Violino",2,2),
-
 ("Saxofone Jazz","Improvisação e swing.","Saxofone",3,3),
 ("Contrabaixo","Walking bass e groove.","Contrabaixo",3,3),
 ("Produção Musical","Gravação e mixagem.","Produção",3,3)
 ]
 
 for turma in turmas:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Turma
+    inserir("""
+    INSERT INTO Turma
     (nome,descricao,especialidade,id_professor,id_escola)
     VALUES (?,?,?,?,?)
     """, turma)
 
 
-# ALUNOS (AGORA COM id_escola)
 alunos = [
-("Rafael Batista","rafael@aluno.com","Rua do Sol 4","5199000004","abc",1),
-("Juliana Martins","juliana@aluno.com","Rua da Lua 5","5199000005","def",1),
-("Carlos Silva","carlos@aluno.com","Rua das Estrelas 6","5199000006","ghi",2),
-("Larissa Monteiro","larissa@aluno.com","Rua Vento 7","5199000007","jkl",2),
-("Gustavo Rocha","gustavo@aluno.com","Rua Fogo 8","5199000008","mno",3),
-("Beatriz Torres","beatriz@aluno.com","Rua Chuva 9","5199000009","pqr",3),
-("Felipe Luz","felipe@aluno.com","Rua Neve 10","5199000010","stu",1),
-("Camila Andrade","camila@aluno.com","Rua Mar 11","5199000011","vwx",2),
-("Vinícius Mendes","vinicius@aluno.com","Rua Serra 12","5199000012","yz1",3),
-("Sofia Nunes","sofia@aluno.com","Rua Luar 13","5199000013","234",1)
+# aprovados
+("Rafael Batista","rafael@aluno.com","Rua do Sol 4","5199000004","abc",1,"aprovado"),
+("Juliana Martins","juliana@aluno.com","Rua da Lua 5","5199000005","def",1,"aprovado"),
+
+# pendentes
+("Lucas Teste","lucas@aluno.com","Rua A","5199000014","123",1,"pendente"),
+("Marina Teste","marina@aluno.com","Rua B","5199000015","123",1,"pendente"),
+("João Teste","joaoteste@aluno.com","Rua C","5199000016","123",2,"pendente"),
+("Ana Teste","anateste@aluno.com","Rua D","5199000017","123",2,"pendente"),
+("Pedro Teste","pedroteste@aluno.com","Rua E","5199000018","123",3,"pendente"),
+("Carla Teste","carlateste@aluno.com","Rua F","5199000019","123",3,"pendente")
 ]
 
 for aluno in alunos:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Aluno
-    (nome,email,endereco,telefone,senha,id_escola)
-    VALUES (?,?,?,?,?,?)
+    inserir("""
+    INSERT INTO Aluno
+    (nome,email,endereco,telefone,senha,id_escola,status_escola)
+    VALUES (?,?,?,?,?,?,?)
     """, aluno)
 
-# ATUALIZAR STATUS DE ALUNOS E CRIAR SOLICITAÇÕES
-cursor.execute("UPDATE Aluno SET status_escola = 'aprovado', data_aprovacao = datetime('now') WHERE id_aluno IS NOT NULL")
-
-# SOLICITAÇÃO ALUNO (Todos já aprovados para manter compatibilidade com testes)
 solicitacoes_alunos = [
-(1, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
-(2, 1, 'aprovado', None, '2026-03-10', '2026-03-10', 1),
-(3, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
-(4, 2, 'aprovado', None, '2026-03-11', '2026-03-11', 2),
-(5, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3),
-(6, 3, 'aprovado', None, '2026-03-12', '2026-03-12', 3),
-(7, 1, 'aprovado', None, '2026-03-13', '2026-03-13', 1),
-(8, 2, 'aprovado', None, '2026-03-13', '2026-03-13', 2),
-(9, 3, 'aprovado', None, '2026-03-14', '2026-03-14', 3),
-(10, 1, 'aprovado', None, '2026-03-14', '2026-03-14', 1)
+# aprovados
+(1,1,'aprovado'),
+(2,1,'aprovado'),
+
+# pendentes
+(3,1,'pendente'),
+(4,1,'pendente'),
+(5,2,'pendente'),
+(6,2,'pendente'),
+(7,3,'pendente'),
+(8,3,'pendente')
 ]
 
 for sol in solicitacoes_alunos:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Solicitacao_Aluno
-    (id_aluno,id_escola,status,mensagem_recusa,data_solicitacao,data_revisao,id_admin_revisor)
-    VALUES (?,?,?,?,?,?,?)
+    inserir("""
+    INSERT INTO Solicitacao_Aluno
+    (id_aluno,id_escola,status,data_solicitacao)
+    VALUES (?,?,?,datetime('now'))
     """, sol)
 
-# RELAÇÃO ALUNO-TURMA
+# ===== RELAÇÃO ALUNO-TURMA =====
 relacoes = [
-(1,1),
-(2,1),
-(3,2),
-(4,2),
-(5,3),
-(6,3),
-(7,4),
-(8,7),
-(9,10),
-(10,5)
+(1,1),(2,1),(3,2),(4,2),(5,3),
+(6,3),(7,4),(8,7),(9,10),(10,5)
 ]
 
-for relacao in relacoes:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Aluno_Turma
+for rel in relacoes:
+    inserir("""
+    INSERT INTO Aluno_Turma
     (id_aluno,id_turma)
     VALUES (?,?)
-    """, relacao)
+    """, rel)
 
-# MATERIAIS
-material = [
+
+# ===== MATERIAIS =====
+materiais_lista = [
 ("Aula 1 - Acordes básicos", "Introdução aos acordes maiores.", None, "2026-03-20", 1, 1),
 ("Exercício de ritmo", "Treinar batidas simples.", None, "2026-03-21", 1, 1),
-
 ("Técnica vocal", "Exercícios de respiração.", None, "2026-03-20", 2, 2),
-
 ("Escalas no teclado", "Prática de escalas maiores.", None, "2026-03-22", 3, 3),
-
 ("Solo iniciante", "Primeiros solos na guitarra.", None, "2026-03-23", 4, 1),
 ("Coordenação motora", "Exercícios básicos de bateria.", None, "2026-03-23", 5, 1),
-
 ("Leitura musical", "Introdução à partitura.", None, "2026-03-21", 7, 2),
-
 ("Improvisação jazz", "Escalas e improviso.", None, "2026-03-22", 10, 3)
 ]
 
-for material in material:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Material
+for mat in materiais_lista:
+    inserir("""
+    INSERT INTO Material
     (titulo, descricao, arquivo, data_envio, id_turma, id_professor)
     VALUES (?, ?, ?, ?, ?, ?)
-    """, material)
-    
-# AVISOS DE EXEMPLO
+    """, mat)
+
+
+# ===== AVISOS =====
 avisos = [
 ("Bem-vindo!", "Bem-vindo à plataforma Maestro. Nossas aulas começam em breve!", "normal", None, 1, 1),
 ("Importante", "Lembrete: comparecer 10 minutos antes da aula", "urgente", None, 1, 1),
@@ -197,11 +190,14 @@ avisos = [
 ]
 
 for aviso in avisos:
-    cursor.execute("""
-    INSERT OR IGNORE INTO Aviso_Escola
+    inserir("""
+    INSERT INTO Aviso_Escola
     (titulo,conteudo,prioridade,arquivo,id_escola,id_admin,data_criacao)
     VALUES (?,?,?,?,?,?,datetime('now'))
     """, aviso)
 
+
 conn.commit()
 conn.close()
+
+print("Banco populado com sucesso.")

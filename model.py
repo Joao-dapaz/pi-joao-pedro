@@ -431,25 +431,39 @@ def inserir_solicitacao_professor(id_professor, id_escola=None):
 
 
 def listar_solicitacoes_professores(id_escola, status=None):
-    """Lista solicitações de professores da escola"""
     conn = conectar()
     cursor = conn.cursor()
 
     if status:
         cursor.execute("""
-        SELECT Professor.id_professor, Professor.nome, Professor.email, Professor.telefone, 
-               Professor.proficiencia, Solicitacao_Professor.status, Solicitacao_Professor.data_solicitacao
+        SELECT 
+            Professor.id_professor,
+            Professor.nome,
+            Professor.email,
+            Professor.telefone,
+            Professor.proficiencia,
+            Professor.endereco,
+            Solicitacao_Professor.data_solicitacao
         FROM Professor
-        JOIN Solicitacao_Professor ON Professor.id_professor = Solicitacao_Professor.id_professor
-        WHERE Solicitacao_Professor.id_escola = ? AND Solicitacao_Professor.status = ?
+        JOIN Solicitacao_Professor 
+            ON Professor.id_professor = Solicitacao_Professor.id_professor
+        WHERE Solicitacao_Professor.id_escola = ? 
+        AND Solicitacao_Professor.status = ?
         ORDER BY Solicitacao_Professor.data_solicitacao DESC
         """, (id_escola, status))
     else:
         cursor.execute("""
-        SELECT Professor.id_professor, Professor.nome, Professor.email, Professor.telefone, 
-               Professor.proficiencia, Solicitacao_Professor.status, Solicitacao_Professor.data_solicitacao
+        SELECT 
+            Professor.id_professor,
+            Professor.nome,
+            Professor.email,
+            Professor.telefone,
+            Professor.proficiencia,
+            Professor.endereco,
+            Solicitacao_Professor.data_solicitacao
         FROM Professor
-        JOIN Solicitacao_Professor ON Professor.id_professor = Solicitacao_Professor.id_professor
+        JOIN Solicitacao_Professor 
+            ON Professor.id_professor = Solicitacao_Professor.id_professor
         WHERE Solicitacao_Professor.id_escola = ?
         ORDER BY Solicitacao_Professor.data_solicitacao DESC
         """, (id_escola,))
@@ -458,24 +472,6 @@ def listar_solicitacoes_professores(id_escola, status=None):
     conn.close()
 
     return solicitacoes
-
-
-def buscar_solicitacao_professor(id_professor, id_escola):
-    """Busca solicitação específica de professor"""
-    conn = conectar()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    SELECT * FROM Solicitacao_Professor
-    WHERE id_professor=? AND id_escola=?
-    """, (id_professor, id_escola))
-
-    solicitacao = cursor.fetchone()
-
-    conn.close()
-
-    return solicitacao
-
 
 def atualizar_status_professor(id_professor, novo_status):
     """Atualiza status_escola do professor"""

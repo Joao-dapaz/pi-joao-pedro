@@ -77,7 +77,7 @@ def fazer_login_admin(email, senha):
     return {
         "sucesso": True,
         "admin_id": admin[0],
-        "id_escola": admin[8]
+        "id_escola": admin[7]
     }
 
 
