@@ -36,7 +36,7 @@
         </div>
 
         <!-- ALUNOS PENDENTES -->
-        <div id="alunos-pendentes" class="tab-content active">
+        <div id="alunos-pendentes" class="tab-content">
             <h3>Alunos Pendentes de Aprovação</h3>
             {% if alunos_pendentes %}
             <table>
@@ -57,7 +57,50 @@
                         <td>{{ aluno[3] }}</td>
                         <td>{{ aluno[6] }}</td>
                         <td>
-                            <a href="/admin/aluno/{{ aluno[0] }}/revisar" class="btn-acao btn-revisar">Ver Detalhes</a>
+                            <button class="btn-expandir" onclick="expandirDetalhes('aluno-{{ aluno[0] }}')">Ver Detalhes</button>
+                        </td>
+                    </tr>
+                    <tr id="aluno-{{ aluno[0] }}" style="display: none;">
+                        <td colspan="5">
+                            <div class="detalhes-expandido aberto">
+                                <div class="info-linha">
+                                    <span class="info-label">Nome:</span>
+                                    <span>{{ aluno[1] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Email:</span>
+                                    <span>{{ aluno[2] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Telefone:</span>
+                                    <span>{{ aluno[3] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Endereço:</span>
+                                    <span>{{ aluno[4] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Data Solicitação:</span>
+                                    <span>{{ aluno[6] }}</span>
+                                </div>
+
+                                <hr style="margin: 15px 0;">
+
+                                <form action="/admin/aluno/{{ aluno[0] }}/aprovar" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn-acao btn-aprovar">✅ Aprovar</button>
+                                </form>
+
+                                <button class="btn-acao btn-rejeitar" onclick="toggleFormRejeicao('form-aluno-{{ aluno[0] }}')">❌ Rejeitar</button>
+
+                                <div id="form-aluno-{{ aluno[0] }}" class="form-rejeicao" style="display: none;">
+                                    <form action="/admin/aluno/{{ aluno[0] }}/rejeitar" method="POST">
+                                        <label><strong>Motivo da Rejeição:</strong></label>
+                                        <textarea name="mensagem" placeholder="Escreva o motivo..." required></textarea>
+                                        <button type="submit" class="btn-acao btn-rejeitar">Confirmar Rejeição</button>
+                                        <button type="button" class="btn-acao" style="background: #999;" onclick="toggleFormRejeicao('form-aluno-{{ aluno[0] }}')">Cancelar</button>
+                                    </form>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -150,7 +193,54 @@
                         <td>{{ prof[4] }}</td>
                         <td>{{ prof[6] }}</td>
                         <td>
-                            <a href="/admin/professor/{{ prof[0] }}/revisar" class="btn-acao btn-revisar">Ver Detalhes</a>
+                            <button class="btn-expandir" onclick="expandirDetalhes('prof-{{ prof[0] }}')">Ver Detalhes</button>
+                        </td>
+                    </tr>
+                    <tr id="prof-{{ prof[0] }}" style="display: none;">
+                        <td colspan="6">
+                            <div class="detalhes-expandido aberto">
+                                <div class="info-linha">
+                                    <span class="info-label">Nome:</span>
+                                    <span>{{ prof[1] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Email:</span>
+                                    <span>{{ prof[2] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Telefone:</span>
+                                    <span>{{ prof[3] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Proficiência:</span>
+                                    <span>{{ prof[4] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Endereço:</span>
+                                    <span>{{ prof[5] }}</span>
+                                </div>
+                                <div class="info-linha">
+                                    <span class="info-label">Data Solicitação:</span>
+                                    <span>{{ prof[6] }}</span>
+                                </div>
+
+                                <hr style="margin: 15px 0;">
+
+                                <form action="/admin/professor/{{ prof[0] }}/aprovar" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn-acao btn-aprovar">✅ Aprovar</button>
+                                </form>
+
+                                <button class="btn-acao btn-rejeitar" onclick="toggleFormRejeicao('form-prof-{{ prof[0] }}')">❌ Rejeitar</button>
+
+                                <div id="form-prof-{{ prof[0] }}" class="form-rejeicao" style="display: none;">
+                                    <form action="/admin/professor/{{ prof[0] }}/rejeitar" method="POST">
+                                        <label><strong>Motivo da Rejeição:</strong></label>
+                                        <textarea name="mensagem" placeholder="Escreva o motivo..." required></textarea>
+                                        <button type="submit" class="btn-acao btn-rejeitar">Confirmar Rejeição</button>
+                                        <button type="button" class="btn-acao" style="background: #999;" onclick="toggleFormRejeicao('form-prof-{{ prof[0] }}')">Cancelar</button>
+                                    </form>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -227,17 +317,37 @@
 
 <script>
     function abrirAba(evt, nomeAba) {
-        // Esconde todos os conteúdos
-        const tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(tab => tab.classList.remove('active'));
+    const aba = document.getElementById(nomeAba);
+    const botao = evt.currentTarget;
 
-        // Remove classe active de todos os botões
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(btn => btn.classList.remove('active'));
+    const jaAtiva = aba.classList.contains('active');
 
-        // Mostra a aba desejada
-        document.getElementById(nomeAba).classList.add('active');
-        evt.currentTarget.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+    if (!jaAtiva) {
+        aba.classList.add('active');
+        botao.classList.add('active');
+    }
+}
+    
+
+    function expandirDetalhes(id) {
+        const row = document.getElementById(id);
+        if (row.style.display === 'none') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+
+    function toggleFormRejeicao(id) {
+        const form = document.getElementById(id);
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
     }
 </script>
 

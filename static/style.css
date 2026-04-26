@@ -64,10 +64,9 @@ input {
 label {
     display: block;
     margin-bottom: 6px;
-    font-size: 15px;
 }
 
-/* ================== CONTAINERS ================== */
+/* ================== LAYOUT ================== */
 #container,
 #container-index,
 #container-login {
@@ -80,28 +79,6 @@ label {
 #container-index,
 #container-login {
     height: 100vh;
-    margin: auto;
-}
-
-#subbox {
-    background-color: var(--fundo-claro);
-    color: var(--texto-escuro);
-    max-width: 1200px;
-    width: 100%;
-    padding: 25px;
-    border-radius: 12px;
-    display: flex;
-    box-shadow: 0 0 12px var(--sombra);
-}
-
-#sobre {
-    background-color: var(--fundo-claro);
-    color: var(--texto-escuro);
-    width: max-content;
-    padding: 25px;
-    border-radius: 12px;
-    display: flex;
-    box-shadow: 0 0 12px var(--sombra);
 }
 
 /* ================== TOPO ================== */
@@ -121,6 +98,27 @@ label {
     margin: 20px auto;
 }
 
+/* ================== BOXES ================== */
+#subbox {
+    background-color: var(--fundo-claro);
+    color: var(--texto-escuro);
+    max-width: 1200px;
+    width: 100%;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    box-shadow: 0 0 12px var(--sombra);
+}
+
+#sobre {
+    background-color: var(--fundo-claro);
+    color: var(--texto-escuro);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px var(--sombra);
+    width: max-content;
+}
+
 /* ================== FORM ================== */
 form {
     background-color: var(--fundo-claro);
@@ -131,7 +129,8 @@ form {
     box-shadow: 0 0 12px var(--sombra);
 }
 
-.form-nova-turma {
+.form-nova-turma,
+.form-novo-aviso {
     background: var(--fundo-claro);
     padding: 20px;
     border-radius: 8px;
@@ -140,15 +139,18 @@ form {
 
 .form-nova-turma input,
 .form-nova-turma textarea,
-.form-nova-turma select {
+.form-nova-turma select,
+.form-novo-aviso input,
+.form-novo-aviso textarea,
+.form-novo-aviso select {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-/* ================== CARDS ================== */
+/* ================== TURMAS ================== */
 #divturmas {
     background-color: var(--verde-medio);
     color: var(--texto-escuro);
@@ -161,20 +163,9 @@ form {
 
 .turma-card {
     background: var(--verde-medio);
-    color: var(--texto-escuro);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.turma-nome {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.turma-info {
-    font-size: 13px;
 }
 
 .turma-acoes {
@@ -188,7 +179,6 @@ form {
     background-color: var(--fundo-claro);
     padding: 15px;
     border-radius: 12px;
-    width: 100%;
 }
 
 /* ================== AVISOS ================== */
@@ -202,15 +192,26 @@ form {
     border-left: 4px solid red;
 }
 
-/* ================== PDF BUTTON ================== */
+.aviso-card {
+    background: white;
+    border-left: 4px solid var(--verde-secundario);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.aviso-urgente {
+    border-left-color: red;
+    background: #ffebee;
+}
+
+/* ================== PDF ================== */
 #pdf {
     padding: 10px 18px;
     border-radius: 12px;
     border: 1px solid var(--verde-principal);
     background-color: #bad4bb;
     color: var(--texto-escuro);
-    cursor: pointer;
-    font-size: 15px;
 }
 
 /* ================== TABELAS ================== */
@@ -218,8 +219,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 5px;
-    overflow: hidden;
 }
 
 th {
@@ -228,21 +227,15 @@ th {
 }
 
 td {
-    padding: 10px 12px;
+    padding: 10px;
     border-bottom: 1px solid #ddd;
-}
-
-tr:hover {
-    background: #f5f5f5;
 }
 
 /* ================== BOTÕES ================== */
 .btn-acao {
     padding: 6px 12px;
-    margin: 3px;
     border-radius: 4px;
     font-size: 12px;
-    font-weight: bold;
 }
 
 .btn-revisar { background: #2196F3; color: white; }
@@ -253,13 +246,41 @@ tr:hover {
     padding: 6px 12px;
     border-radius: 4px;
     font-size: 12px;
-    font-weight: bold;
 }
 
 .btn-editar { background: #2196F3; color: white; }
 .btn-deletar { background: #f44336; color: white; }
 
-/* ================== STATS ================== */
+/* ================== ADMIN ================== */
+.detalhes-expandido {
+    background: white;
+    padding: 15px;
+    margin-top: 10px;
+    border-left: 4px solid var(--verde-secundario);
+}
+
+.info-linha {
+    margin: 8px 0;
+}
+
+.info-label {
+    font-weight: bold;
+    width: 120px;
+    display: inline-block;
+}
+
+.form-rejeicao {
+    background: white;
+    padding: 12px;
+    border-left: 3px solid red;
+    display: none;
+}
+
+/* ================== DASHBOARD ================== */
+.chart-container {
+    height: 250px;
+}
+
 .stat-card {
     background: var(--verde-medio);
     padding: 15px;
@@ -267,71 +288,45 @@ tr:hover {
     text-align: center;
 }
 
-.stat-numero {
+.stat-number {
     font-size: 28px;
-    font-weight: bold;
 }
 
 .stat-label {
     font-size: 12px;
 }
 
-/* ================== TABS ================== */
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-.tab-btn {
-    padding: 10px 15px;
-    margin: 5px;
-    background: var(--verde-medio);
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.tab-btn.active {
-    background: var(--verde-secundario);
-}
-
 /* ================== OUTROS ================== */
-#logo img {
-    width: 150px;
-    margin-left: 25px;
-}
-
-#logo h1 {
-    margin-left: 11px;
-    font-family: 'Times New Roman', Times, serif;
-}
-
 #logo {
     background-color: var(--fundo-suave);
     color: var(--verde-principal);
-    width: max-content;
     padding: 25px;
     border-radius: 50px;
-    box-shadow: 0 0 12px var(--sombra);
 }
 
 #mapa {
     width: 60%;
     height: 500px;
-    background-color: rgba(118, 147, 88, 0.2);
+    background-color: rgba(118,147,88,0.2);
     border-radius: 10px;
-    backdrop-filter: blur(3px);
 }
 
 #lista-escolas {
-    flex: 1;
     background-color: var(--fundo-claro);
     padding: 20px;
     border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
 }
 
 .boxs-escolas {
     background-color: white;
     border-radius: 20px;
     padding: 20px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
 }

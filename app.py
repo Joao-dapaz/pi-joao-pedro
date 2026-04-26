@@ -268,22 +268,6 @@ def admin_solicitacoes():
     )
 
 
-@app.route("/admin/aluno/<int:id_aluno>/revisar")
-def admin_revisar_aluno(id_aluno):
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    
-    dados = service.revisar_aluno(id_aluno, id_escola)
-    
-    return render_template(
-        "admin_revisar.html",
-        tipo="aluno",
-        dados=dados["aluno"],
-        solicitacao=dados["solicitacao"]
-    )
-
 @app.route("/admin/aluno/<int:id_aluno>/aprovar", methods=["POST"])
 def admin_aprovar_aluno(id_aluno):
     if "admin_id" not in session:
@@ -312,21 +296,6 @@ def admin_rejeitar_aluno(id_aluno):
     flash("Aluno rejeitado!")
     return redirect("/admin/solicitacoes")
 
-@app.route("/admin/professor/<int:id_professor>/revisar")
-def admin_revisar_professor(id_professor):
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-    
-    id_escola = session["id_escola"]
-    
-    dados = service.revisar_professor(id_professor, id_escola)
-    
-    return render_template(
-        "admin_revisar.html",
-        tipo="professor",
-        dados=dados["professor"],
-        solicitacao=dados["solicitacao"]
-    )
 
 @app.route("/admin/professor/<int:id_professor>/aprovar", methods=["POST"])
 def admin_aprovar_professor(id_professor):
