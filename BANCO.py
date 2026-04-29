@@ -5,9 +5,9 @@ import os
 def resetar_banco(escola_db):
     if os.path.exists(escola_db):
         os.remove(escola_db)
-        print("Banco de dados apagado com sucesso.")
+        print("Banco de dados reiniciado com sucesso.")
     else:
-        print("Banco não existe, nada para apagar.")
+        print("Banco não existe, nada para apagar, criando tabelas...")
 
 resetar_banco("escola.db")
 conn = conectar()
