@@ -407,6 +407,13 @@ def contar_alunos_por_status(id_escola, status):
     conn.close()
 
     return count
+
+def atualizar_escola_aluno(id_aluno, id_escola):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Aluno SET id_escola = ? WHERE id_aluno = ?", (id_escola, id_aluno))
+    conn.commit()
+    conn.close()
 # ===== FUNÇÕES SOLICITACAO_PROFESSOR =====
 
 def inserir_solicitacao_professor(id_professor, id_escola=None):

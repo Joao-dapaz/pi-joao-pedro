@@ -108,10 +108,13 @@ navigator.geolocation.getCurrentPosition(function(pos){
         div.className = "boxs-escolas";
 
         div.innerHTML =
-        "<h5>"+escola[1]+"</h5>" +
-        "<p>"+(escola[6] || "")+"</p>" +
-        "<p>"+escola[2]+"</p>" +
-        "<p><b>"+Math.round(escola.distancia)+" metros</b></p>";
+        "<h5>" + escola[1] + "</h5>" +
+        "<p>" + (escola[6] || "") + "</p>" +
+        "<p>" + escola[2] + "</p>" +
+        "<p><b>" + Math.round(escola.distancia) + " metros</b></p>" +
+        "<form action='/conectar_escola/" + escola[0] + "' method='POST'>" +
+            "<button type='submit'>Solicitar entrada</button>" +
+        "</form>";
 
         lista.appendChild(div);
 

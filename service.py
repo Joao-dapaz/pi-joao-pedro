@@ -48,15 +48,16 @@ def fazer_login_aluno(email, senha):
     if not aluno:
         return {"sucesso": False, "mensagem": "Email ou senha inválidos."}
 
+    if aluno[7] == 'pendente':
+        return {"sucesso": False, "mensagem": "Sua solicitação está em análise. Aguarde aprovação do administrador."}
+
+    if aluno[7] == 'rejeitado':
+        return {"sucesso": False, "mensagem": "Sua solicitação foi rejeitada. Entre em contato com a escola."}
+
     if aluno[6] is None:
         return {"sucesso": False, "mensagem": "Você precisa se conectar a uma escola antes de entrar."}
 
-    return {
-        "sucesso": True,
-        "aluno_id": aluno[0],
-        "id_escola": aluno[6]
-    }
-
+    return {"sucesso": True, "aluno_id": aluno[0], "id_escola": aluno[6]}
 
 def fazer_login_professor(email, senha):
     professor = model.professor_login(email, senha)

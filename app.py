@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, send_file
+
 import model
 import os
 import service
@@ -28,6 +29,11 @@ def cadastrar():
 def login():
     return render_template("login.html")
 
+@app.route("/download/<path:caminho>")
+def download_arquivo(caminho):
+    if "aluno_id" not in session:
+        return redirect("/login")
+    return send_file(caminho, as_attachment=True)
 
 @app.route("/conexao_escola")
 def conexao_escola():
@@ -120,10 +126,13 @@ def turmas():
 
 @app.route("/turma/<int:id_turma>/pessoas")
 def turma_pessoas(id_turma):
+    if "aluno_id" not in session and "professor_id" not in session:
+        return redirect("/login")
+
     dados = service.buscar_pessoas_da_turma(id_turma, session)
 
-    if dados is None:
-        return None
+    if isinstance(dados, tuple):
+        return dados[0], dados[1]
 
     return render_template(
         "turma_pessoas.html",
@@ -139,29 +148,15 @@ def fazer_login_aluno():
     email = request.form["email"]
     senha = request.form["senha"]
 
-    aluno = model.aluno_login(email, senha)
-
-    if not aluno:
-        flash("Email ou senha inválidos.")
-        return redirect("/login")
-
-    if aluno[7] == 'pendente':
-        flash("Sua solicitação está em análise. Aguarde aprovação do administrador.")
-        return redirect("/login")
-
-    if aluno[7] == 'rejeitado':
-        flash("Sua solicitação foi rejeitada. Entre em contato com a escola.")
-        return redirect("/login")
-
     resultado = service.fazer_login_aluno(email, senha)
 
-    if resultado["sucesso"]:
-        session["aluno_id"] = resultado["aluno_id"]
-        session["id_escola"] = resultado["id_escola"]
-        return redirect("/escola")
+    if not resultado["sucesso"]:
+        flash(resultado["mensagem"])
+        return redirect("/login")
 
-    flash(resultado["mensagem"])
-    return redirect("/login")
+    session["aluno_id"] = resultado["aluno_id"]
+    session["id_escola"] = resultado["id_escola"]
+    return redirect("/escola")
 
 
 @app.route("/fazer_login_professor", methods=["POST"])
@@ -193,14 +188,26 @@ def cadastrar_aluno():
     if cadastro:
         aluno = model.aluno_login(email, senha)
         if aluno:
-            model.inserir_solicitacao_aluno(aluno[0], None)
+            session["temp_aluno_id"] = aluno[0]
 
-        flash("Sua solicitação foi enviada! Aguarde aprovação do administrador da escola.")
-        return redirect("/login")
+        flash("Cadastro realizado! Agora escolha sua escola no mapa.")
+        return redirect("/conexao_escola")
     else:
         flash("Email já cadastrado.")
         return redirect("/cadastrar")
 
+@app.route("/conectar_escola/<int:id_escola>", methods=["POST"])
+def conectar_escola(id_escola):
+    id_aluno = session.get("temp_aluno_id")
+    if not id_aluno:
+        return redirect("/cadastrar")
+
+    model.atualizar_escola_aluno(id_aluno, id_escola)
+    model.inserir_solicitacao_aluno(id_aluno, id_escola)
+
+    session.pop("temp_aluno_id", None)
+    flash("Solicitação enviada! Aguarde aprovação do administrador.")
+    return redirect("/login")
 
 @app.route("/logout")
 def logout():
@@ -367,6 +374,20 @@ def admin_turmas():
 
     return render_template("turmas_admin.html", turmas=turmas, professores=professores) 
 
+@app.route("/admin/turmas/nova", methods=["POST"])
+def admin_turma_nova():
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    nome = request.form["nome"]
+    descricao = request.form["descricao"]
+    especialidade = request.form["especialidade"]
+    id_professor = request.form["id_professor"]
+    id_escola = session["id_escola"]
+
+    service.criar_turma_admin(nome, descricao, especialidade, id_professor, id_escola)
+    flash("Turma criada com sucesso!")
+    return redirect("/admin/turmas")
 
 @app.route("/admin/turmas/<int:id_turma>/deletar", methods=["POST"])
 def admin_deletar_turma(id_turma):
